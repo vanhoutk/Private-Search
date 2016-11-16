@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		915C51991DDC8EDD003A431F /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 915C51981DDC8EDD003A431F /* main.c */; };
+		915C51AD1DDC8F34003A431F /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 915C51A81DDC8F34003A431F /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +23,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		915C51951DDC8EDD003A431F /* PRI Plugin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "PRI Plugin"; sourceTree = BUILT_PRODUCTS_DIR; };
-		915C51981DDC8EDD003A431F /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		915C51951DDC8EDD003A431F /* PRI Plugin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "PRI Plugin"; path = "/Users/doug/Desktop/PRI Plugin/build/Debug/PRI Plugin"; sourceTree = "<absolute>"; };
+		915C519F1DDC8F34003A431F /* ad_processing.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ad_processing.js; sourceTree = "<group>"; };
+		915C51A01DDC8F34003A431F /* background.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
+		915C51A21DDC8F34003A431F /* Icons */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Icons; sourceTree = "<group>"; };
+		915C51A31DDC8F34003A431F /* foreground_index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = foreground_index.js; sourceTree = "<group>"; };
+		915C51A51DDC8F34003A431F /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		915C51A61DDC8F34003A431F /* popup */ = {isa = PBXFileReference; lastKnownFileType = folder; path = popup; sourceTree = "<group>"; };
+		915C51A81DDC8F34003A431F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		915C51A91DDC8F34003A431F /* popup.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
+		915C51AA1DDC8F34003A431F /* serialize.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = serialize.js; sourceTree = "<group>"; };
+		915C51AB1DDC8F34003A431F /* training_data.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = training_data.js; sourceTree = "<group>"; };
+		915C51AC1DDC8F34003A431F /* PRI.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = PRI.js; sourceTree = "<group>"; };
+		915C51AE1DDCC47D003A431F /* text_handling.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = text_handling.js; sourceTree = "<group>"; };
+		915C51AF1DDD0CB5003A431F /* probe.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = probe.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,25 +53,20 @@
 		915C518C1DDC8EDD003A431F = {
 			isa = PBXGroup;
 			children = (
-				915C51971DDC8EDD003A431F /* PRI Plugin */,
-				915C51961DDC8EDD003A431F /* Products */,
+				915C519F1DDC8F34003A431F /* ad_processing.js */,
+				915C51A01DDC8F34003A431F /* background.js */,
+				915C51AF1DDD0CB5003A431F /* probe.js */,
+				915C51A21DDC8F34003A431F /* Icons */,
+				915C51A31DDC8F34003A431F /* foreground_index.js */,
+				915C51A51DDC8F34003A431F /* manifest.json */,
+				915C51A61DDC8F34003A431F /* popup */,
+				915C51A81DDC8F34003A431F /* README.md */,
+				915C51A91DDC8F34003A431F /* popup.js */,
+				915C51AA1DDC8F34003A431F /* serialize.js */,
+				915C51AB1DDC8F34003A431F /* training_data.js */,
+				915C51AC1DDC8F34003A431F /* PRI.js */,
+				915C51AE1DDCC47D003A431F /* text_handling.js */,
 			);
-			sourceTree = "<group>";
-		};
-		915C51961DDC8EDD003A431F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				915C51951DDC8EDD003A431F /* PRI Plugin */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		915C51971DDC8EDD003A431F /* PRI Plugin */ = {
-			isa = PBXGroup;
-			children = (
-				915C51981DDC8EDD003A431F /* main.c */,
-			);
-			path = "PRI Plugin";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,7 +112,7 @@
 				en,
 			);
 			mainGroup = 915C518C1DDC8EDD003A431F;
-			productRefGroup = 915C51961DDC8EDD003A431F /* Products */;
+			productRefGroup = 915C518C1DDC8EDD003A431F;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -119,7 +126,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				915C51991DDC8EDD003A431F /* main.c in Sources */,
+				915C51AD1DDC8F34003A431F /* README.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +253,7 @@
 				915C519E1DDC8EDD003A431F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

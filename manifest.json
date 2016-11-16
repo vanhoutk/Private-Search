@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "name": "PRI addon",
+  "version": "0.0.1",
+
+  "description": "Infers learning by google of user interests",
+  "icons": {
+    "48": "Icons/icon-48.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "privaddon@local",
+      "strict_min_version": "45.0"
+    }
+  },
+
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": "Icons/icon-48.png",
+    "default_title": "History",
+    "default_popup": "popup/history.html"
+  },
+ 
+
+  "permissions": ["cookies", "tabs", "contextMenus", "storage", "notifications",  "webRequest", "<all_urls>", "https://cdnjs.cloudflare.com/*"],
+
+  "background": { 
+    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data.js", "PRI.js", "background.js", "probe.js"]
+ },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.google.com/*", "*://*.google.ie/*", "*://*.google.co.uk/*", "*://*.google.com.au/*", "*://*.google.co.nz/*", "*://*.google.ca/*"],
+      "js": ["popup.js","foreground_index.js"],
+      "run_at":    "document_end"
+    }
+  ]
+
+}
