@@ -178,7 +178,7 @@ function new_category(){
     // Grab category name from form
     category_name = document.getElementById("new_category").value;
 
-    chrome.runtime.sendMessage({subject:'add_label', 'category_name':category_name});
+    chrome.runtime.sendMessage({subject:'add_label', category_name: category_name});
  
     input_box = document.getElementById("new_category")
     input_box.value = ""

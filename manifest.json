@@ -32,7 +32,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.google.com/*", "*://*.google.ie/*", "*://*.google.co.uk/*", "*://*.google.com.au/*", "*://*.google.co.nz/*", "*://*.google.ca/*"],
-      "js": ["text_handling.js","ad_processing.js","foreground_index.js"],
+      "js": ["text_handling.js","ad_processing.js","foreground.js"],
       "run_at":    "document_end"
     }
   ]

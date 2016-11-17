@@ -5,11 +5,9 @@
  * @param  {Boolean} first_training  Indicates if this is the first time training
  *                                   is performed; defaults to true.
  */
-var profile = true;
-function log(msg){ console.log(msg); }
 
 function training(first_training = true) {
-    /**/console.log("function training...\n");
+    (debug>0)&&log("training ...");
     var labels_str = localStorage.getItem("labels");
     var keywords_str = localStorage.getItem("keywords");
     var matrix_str = localStorage.getItem("count_matrix");
@@ -20,6 +18,7 @@ function training(first_training = true) {
         labels = deserializeStrArray(labels_str);
         keywords = deserializeStrArray(keywords_str);
         count_matrix = deserializeMatrix(matrix_str);
+        (debug>0)&&log("warm start");
         return {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs};
     }
     // use default training data
@@ -59,8 +58,8 @@ function training(first_training = true) {
     var trained_data = {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs};
     saveTrainedData(trained_data);
     var t1 = performance.now();
-    profile&&log("save took " + (t1 - t0) + " milliseconds.")
-    /**/console.log("# Keywords = %i\n\n",keywords.length);
+    profile&&log("save took " + (t1 - t0) + " milliseconds.");
+    (debug>0)&&log("keywords: "+keywords.length);
     return trained_data;
 }
 
@@ -107,7 +106,7 @@ function saveTrainedData(trained_data) {
 function addLabel(trained_data, label) {
     var label_index = trained_data.labels.indexOf(label);
     if (label_index >= 0) {
-       console.log('ERROR: addLabel called with existing label: '+label);
+       console.log('WARNING: addLabel called with existing label: '+label);
        return trained_data;      
     }
     // unknown label, add it as a new one
@@ -138,13 +137,13 @@ function addTrainingData(trained_data, ad_txt, label) {
        return trained_data;      
     }
     // update dictionary of keywords
-    //console.log(trained_data.keywords);
-    //console.log(trained_data.keywords.length);
-    console.log(ad_txt);
+    (debug>2)&&log(trained_data.keywords);
+    (debug>2)&&log(trained_data.keywords.length);
+    (debug>0)&&log(ad_txt);
     for (var ad of ad_txt) {
       if (trained_data.keywords.indexOf(ad)<0) {
          trained_data.keywords.push(ad);
-         console.log('added '+ad);
+         (debug>0)&&log('added '+ad);
       }
     }
     //trained_data.keywords = getUniqueWords(trained_data.keywords,1);
@@ -162,12 +161,6 @@ function addTrainingData(trained_data, ad_txt, label) {
     // Save training variables to local storage
     saveTrainedData(trained_data);
     return trained_data;
-  
-//    var old_training = localStorage.getItem("training_data");
-//    var new_training = old_training + ad_data;
-//    localStorage.setItem("training_data", new_training);
-//    // Redo training
-//    return training(true);
 }
 /**
  * Creates a list of unique keywords appearing in the adverts.
@@ -197,10 +190,8 @@ function createCountMatrix(labels,keywords,training_data) {
         for (var token of tokens) {
           var keyword_index = keywords.indexOf(token);
           count_matrix[label_index][keyword_index]++;
-          //updateCountMatrix(count_matrix, labels,keywords, token, ad_label);
         }
     }
-
     return count_matrix;
 }
 /**
@@ -282,7 +273,7 @@ function getPRI(trained_data, ad) {
 		}
 		pri.push(sum);
 	}
-	//console.log("PRI:");console.log(pri);
+	(debug>2)&&log("PRI:");(debug>2)&&log(pri);
 	return pri;
 }
 
@@ -290,7 +281,7 @@ function getProbs(count_matrix, labels, keywords) {
 	// Get the sums of the rows and columns of the count matrix
 	var row_sums = getRowSums(count_matrix);
 	var col_sums = getColSums(count_matrix);
-  //console.log('row'+row_sums); console.log('col'+col_sums);
+  (debug>2)&&log('row'+row_sums); (debug>2)&&log('col'+col_sums);
 	var len_labels = labels.length, len_kw = keywords.length;
 	/* --- Row probabilities --- */
 	// Create a data structure similar to the count matrix

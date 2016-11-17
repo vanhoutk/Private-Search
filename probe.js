@@ -29,9 +29,9 @@ function probe()
                 pris[i] = getPRI(trained_data, ad_proc[i]);
                 cats[i] = categories[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
             }
-            console.log(ad_proc);
-            console.log(cats);
-            console.log(average(pris));
+            (debug>0)&&log(ad_proc);
+            (debug>0)&&log(cats);
+            (debug>0)&&log(average(pris));
             
             // Average pri_arr returns an array of floats.
             var avg_pri = average(pris);
@@ -40,7 +40,7 @@ function probe()
           
             // update local storage -- not really needed here, just makes sure log is persistent
             localStorage.setItem('pri_history', JSON.stringify(pri_history));
-            console.log(pri_history);
+            (debug>0)&&log(pri_history);
         }
     };
 }

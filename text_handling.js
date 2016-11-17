@@ -27,7 +27,7 @@ function getUniqueWords(arr,log=0) {
     if (arr[i] !== prev) {
       words.push(arr[i]);
     } else {
-      if (log) {console.log('duplicate:'+arr[i]);};
+      if (log) {(debug>0)&&log('duplicate:'+arr[i]);};
     }
     prev = arr[i];
   }
@@ -93,7 +93,6 @@ function removeStopWords(str) {
   			keywords.push(word);
   		}
   	}
-    //console.log(keywords.join(' '));
     return keywords.join(' ');
 }
 

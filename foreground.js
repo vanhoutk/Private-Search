@@ -8,6 +8,9 @@
     Then, when the user adds an ad to a category, index.js must communicate this back to background.js with the full text of the ad.
 */
 
+var debug = 1; // controls level of logging to console, 0=no logging, 1=basic logging
+function log(msg){ console.log(msg); }
+
 function init(request, sender, sendResponse){
   // request contains category info supplied by background process of add-on (so persists
   // across web pages)
@@ -15,16 +18,14 @@ function init(request, sender, sendResponse){
   if(request.subject != 'categories'){
     console.log('ERROR: init() called with subject='+request.subject);
   }
-  console.log('init'+request.categories);
+  (debug>0)&&log('init'+request.categories);
   
   // get adverts in page
   var ads = extractAds(document);
-  console.log('num ads on user page: '+ads.length);
-  categories = JSON.parse(request.categories);
+  (debug>0)&&log('num ads on user page: '+ads.length);
+  categories = request.categories;
   // now construct a button and drop down box and add to each advert in turn
   for (var i=0; i<ads.length; i++){
-    //console.log('Ad'+i);
-    
     // extract text from advert and tokenize.  do this here, before we add text
     // in select drop down box etc to the advert
     var ad_proc = processAds([ads[i]]);
@@ -38,7 +39,6 @@ function init(request, sender, sendResponse){
       s += categories[j];
       s += '</option>';
     }
-    
     s += '</select>';
     // and create a button
     var btn = '<button class="category_add_button">Add to Category</button>'
@@ -53,7 +53,7 @@ function init(request, sender, sendResponse){
  
     // estimate category of this advert using PRI score.  need to use backend to calc PRI score
     chrome.runtime.sendMessage({subject:'request_pri_score', ad_text: ad_proc[0], ad: ads[i].getAttribute('data-hveid')}, function (request) {
-      //console.log('category='+request.category+',ad='+request.ad);
+      (debug>2)&&console.log('category='+request.category+',ad='+request.ad);
       ad=document.querySelectorAll('[data-hveid="'+request.ad+'"]');
       suspected = document.createElement('div');
       suspected.innerHTML = '<b>Suggested Category</b>: '+request.category;
@@ -61,7 +61,7 @@ function init(request, sender, sendResponse){
     }) ;
    }
 
-  console.log('init completed.');
+  (debug>0)&&log('init completed.');
 };
 
 
@@ -69,7 +69,7 @@ function add_ad_to_category(){
     // tag advert as being in a particular category.  this is used to train PRI.
     select = this.previousSibling; // get select drop down box
     name_of_category = select.options[select.selectedIndex].value;
-    console.log('Adding ad to '+name_of_category);
+    (debug>0)&&log('Adding ad to '+name_of_category);
 
     // Clone the ad and remove what we added so we get an accurate processing of the ad text
     elem = select.parentElement.cloneNode(true);
@@ -79,7 +79,7 @@ function add_ad_to_category(){
 
     keywords = processAds([elem]); // stem and tokenise
     chrome.runtime.sendMessage(message={subject:'add_training_data', label: name_of_category, keywords: keywords});
-    console.log('+' + name_of_category + '::' + keywords);
+    (debug>0)&&log('+' + name_of_category + '::' + keywords);
 
     parent = this.parentElement;
     msg = parent.childNodes[parent.childNodes.length-1];
@@ -87,13 +87,13 @@ function add_ad_to_category(){
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-  console.log('Add-on loaded...');
+  (debug>0)&&log('Add-on loaded...');
   var page_url = window.location.href;
 
   // Execute only on Google pages
   if (page_url.indexOf('google') != -1) {
       //document.body.style.border = "2px solid red";
-      console.log('Page is a google page... request categories info from add-on');
+      (debug>0)&&log('Page is a google page... request categories info from add-on');
       chrome.runtime.sendMessage({subject:'request_categories'}, init) ;
   }
 });
