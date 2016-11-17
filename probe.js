@@ -1,6 +1,5 @@
 // Do the probe
-function probe()
-{
+function probe(trained_data, pri_history) {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=causes+and+symptoms");
 	//xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=poker");
@@ -8,7 +7,7 @@ function probe()
 	xmlHttp.send();
 
 	//notify({'url':'Made a probe'});
-  console.log('making probe');
+  (debug>0)&&log('making probe');
 
   // When the page has loaded, proceed.
 	xmlHttp.onreadystatechange = function(){
@@ -27,7 +26,7 @@ function probe()
             var pris = [], cats=[];
             for (var i=0; i<ad_proc.length; i++) {
                 pris[i] = getPRI(trained_data, ad_proc[i]);
-                cats[i] = categories[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
+                cats[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
             }
             (debug>0)&&log(ad_proc);
             (debug>0)&&log(cats);

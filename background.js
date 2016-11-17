@@ -4,12 +4,11 @@
     Communication with both the browser action and the content script happens here.
 */
 var debug = 1; // controls level of logging to console, 0=no logging, 1=basic logging
-var profile = false; // change to true for performance timing info
+var profile = 0; // change to 1 for performance timing info
 function log(msg){ console.log(msg); }
 
 // When we load the addon, do the training
 var trained_data = training();
-var categories = trained_data.labels;
 (debug>2)&&log(row_probs); (debug>2)&&log(col_probs);
 
 var t=[], pris=[];
@@ -27,20 +26,24 @@ chrome.runtime.onMessage.addListener(message_recv);
 var count=0;
 function message_recv(message, sender, sendResponse){
     (debug>2)&&log('message_recv()');
+    var categories = trained_data.labels;
     if(message.subject == 'add_training_data'){
+        // add a new labelled advert to our training data
         label = message.label;
         keywords = message.keywords[0];
         trained_data = addTrainingData(trained_data, keywords, label);
     } else if (message.subject == 'request_categories'){
+        // reply with the list of advert categories from training data
         if (!sendResponse) {console.log('ERROR: message_recv called without sendResponse');}
         sendResponse({subject: 'categories', categories: categories});
         count += 1;
         if (count >=5) {
           // make a probe
-          probe();
+          probe(trained_data, pri_history);
           count=0;
         }
     } else if (message.subject == 'request_pri_score') {
+        // given an advert, reply with its PRI score
         if (!sendResponse) {console.log('ERROR: message_recv called without sendResponse');}
         (debug>2)&&log(message.ad_text);
         var pri = getPRI(trained_data,message.ad_text);
@@ -50,6 +53,7 @@ function message_recv(message, sender, sendResponse){
         cat = categories[pri.indexOf(Math.max.apply(Math, pri))];
         sendResponse({ad:message.ad, category: cat});
     } else if (message.subject == 'add_label') {
+        // add a new label (advert category)
         (debug>2)&&console.log('add_label '+message.category_name);
         trained_data = addLabel(trained_data, message.category_name);
         categories = trained_data.labels;;
