@@ -6,21 +6,25 @@ function log(msg){ console.log(msg); }
 function draw_graph(pri_history){
   
     var ctx = document.getElementById("myCanvas").getContext("2d");
+    var datasets=[];
+    for (var label in pri_history) {
+       datasets.push({data:pri_history[label].pri, label:label});
+    }
     var c = new Chart(ctx, {
       type: 'line',
       data: {
         labels: pri_history.gambling.t,  //TO DO: allow different x-axis points for each curve
+        //datasets: datasets // TO DO: plot is cluttered when plot all categories together
         datasets: [{
           label: 'gambling',
           data: pri_history.gambling.pri
-          //labels: pri_history.gambling.t
-          //backgroundColor: "rgba(153,255,51,0.4)"
         }]
       },
       options: {
         scales: {xAxes: [{type: "time",time: {unit:'hour'} }]},
       }
     });
+ 
     console.log(pri_history.gambling.pri);
 }
 
