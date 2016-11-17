@@ -56,15 +56,12 @@ function training(first_training = true) {
     profile&&log("getProbs took " + (t0 - t1) + " milliseconds.")
   
     // Save training variables to local storage
-    localStorage.setItem("labels", serializeArray(labels));
-    localStorage.setItem("keywords", serializeArray(keywords));
-    localStorage.setItem("count_matrix", serializeMatrix(count_matrix));
-    localStorage.setItem("row_probs", serializeArray(row_probs));
-    localStorage.setItem("col_probs", serializeArray(col_probs));
+    var trained_data = {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs};
+    saveTrainedData(trained_data);
     var t1 = performance.now();
     profile&&log("save took " + (t1 - t0) + " milliseconds.")
     /**/console.log("# Keywords = %i\n\n",keywords.length);
-    return {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs};
+    return trained_data;
 }
 
 /**
@@ -97,6 +94,34 @@ function splitTrainingData(training_data) {
     profile&&log('broken down as ' + t0_sum+' '+t1_sum)
     return training_data_;
 }
+
+function saveTrainedData(trained_data) {
+    // Save training variables to local storage
+    localStorage.setItem("labels", serializeArray(trained_data.labels));
+    localStorage.setItem("keywords", serializeArray(trained_data.keywords));
+    localStorage.setItem("count_matrix", serializeMatrix(trained_data.count_matrix));
+    localStorage.setItem("row_probs", serializeArray(trained_data.row_probs));
+    localStorage.setItem("col_probs", serializeArray(trained_data.col_probs));
+}
+
+function addLabel(trained_data, label) {
+    var label_index = trained_data.labels.indexOf(label);
+    if (label_index >= 0) {
+       console.log('ERROR: addLabel called with existing label: '+label);
+       return trained_data;      
+    }
+    // unknown label, add it as a new one
+    trained_data.labels.push(label);
+    // and expand count_matrix with an extra row
+    var len=trained_data.count_matrix.length;
+    trained_data.count_matrix[len] = new Array(trained_data.keywords.length);
+    trained_data.count_matrix[len].fill(0);
+    // update row and col frequencies
+    [trained_data.row_probs, trained_data.col_probs] = getProbs(trained_data.count_matrix,trained_data.labels,trained_data.keywords);
+
+    saveTrainedData(trained_data);
+    return trained_data;
+}
 /**
  * Includes and advert in the training data.
  * @param {Array}  ad_txt  Array containing the advert text.
@@ -108,8 +133,9 @@ function addTrainingData(trained_data, ad_txt, label) {
 
     var label_index = trained_data.labels.indexOf(label);
     if (label_index < 0) {
-       // unknown label, should we add it as a new one ?
-       return trained_data;
+       // unknown label
+       console.log('ERROR: addTrainingData called with invalid label: '+label);
+       return trained_data;      
     }
     // update dictionary of keywords
     //console.log(trained_data.keywords);
@@ -134,12 +160,7 @@ function addTrainingData(trained_data, ad_txt, label) {
     [trained_data.row_probs, trained_data.col_probs] = getProbs(trained_data.count_matrix,trained_data.labels,trained_data.keywords);
  
     // Save training variables to local storage
-    localStorage.setItem("labels", serializeArray(trained_data.labels));
-    localStorage.setItem("keywords", serializeArray(trained_data.keywords));
-    localStorage.setItem("count_matrix", serializeMatrix(trained_data.count_matrix));
-    localStorage.setItem("row_probs", serializeArray(trained_data.row_probs));
-    localStorage.setItem("col_probs", serializeArray(trained_data.col_probs));
-  
+    saveTrainedData(trained_data);
     return trained_data;
   
 //    var old_training = localStorage.getItem("training_data");
@@ -214,6 +235,7 @@ function getRowSums(count_matrix) {
      for (var j = 0; j < n_cols; j++) {
         sum += count_matrix[i][j];
      }
+     if (sum==0) sum=1; // avoid divide by zero
 		 row_sums.push(sum);
 	}
 	return row_sums;

@@ -4,47 +4,8 @@
 */
 
 var colors = ['#ffd700', '#0000ff', '#800080','#00ff00', '#81d8d0', '#990000', '#191970', '#8a2be2', '#4169e1'];
-
-
-var pri_history = {};
 var x_axis_height = 600;
 var y_axis_height = 300;
-
-// Pri history is a dict of arrays, containing the pri's for a given time for each category.
-var categories = JSON.parse(localStorage.getItem("categories"));
-
-if(categories === null){
-    categories = JSON.parse("[]");
-    localStorage.setItem('categories', JSON.stringify(categories));
-}
-
-// Declare each category as a list
-for( var i=0; i<categories.length; i++){
-    pri_history[categories[i]] = [];
-}
-
-// General listening function
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.subject == 'get_pri'){
-        return;
-    }
-    if (message.subject == 'pri_history'){
-        pri_history = JSON.parse(message.pri_history); 
-        redraw_graph(pri_history);
-        return; 
-    }
-    if (message.subject == 'pri') {
-        addPri(0, message.pri);
-    }
-});
-
-get_pri_history();
-
-// Instruct the background to send us the pri_history for the session
-function get_pri_history(){
-    chrome.runtime.sendMessage(message={subject:'get_pri'});
-}
-
 
 function get_max(arr){
 
@@ -97,8 +58,6 @@ function get_y_axis_multiplier(pri_history, y_axis_height){
 
 
 function setupGraph(){
-
-
     // Y Axis height is equal to 
     // X axis is constant
     // Y axis multiplier = y axis height divided by range of pri_history
@@ -138,10 +97,7 @@ function addPri(time, pri){
 }
 
 function redraw_graph(){
-    
-    document.getElementById('export_button').onclick = fetch_data;
-    document.getElementById('new_category_button').onclick = new_category;
-
+  
     c = document.getElementById("myCanvas");
     ctx = c.getContext("2d");
 
@@ -186,30 +142,6 @@ function redraw_graph(){
     ctx.fillStyle = '#ff0000';
 }
 
-function new_category(){
-    // Grab category name from form
-    category_name = document.getElementById("new_category").value;
-
-    // Grab categories from localStorage
-    loaded_categories = JSON.parse(localStorage.getItem("categories"));
-
-    if(categories === null){
-        categories = [];
-    }
-
-    // Add to the list of categories and store new list back
-    loaded_categories.push(category_name);
-    localStorage.setItem("categories", JSON.stringify(loaded_categories));
-    input_box = document.getElementById("new_category")
-    input_box.value = ""
-    ok_mesg = document.createElement('div');
-    ok_mesg.innerHTML = "<p class=\"success\"><b>New category created</b></p>";
-    input_box.parentNode.appendChild(ok_mesg);
-    categories.push(category_name);
-    pri_history[category_name] = [];
-
-}
-
 function draw_point(x,y, mult){
     // a y of -1 is a null point, don't draw it
     if (y == "-1"){
@@ -221,10 +153,7 @@ function draw_point(x,y, mult){
     ctx.beginPath();
     ctx.arc(280-(x*10),400-(y*mult),3,0,2*Math.PI);
     ctx.stroke();
-
 }
-
-redraw_graph();
 
 
 // Grabs the full history of pri's from localStorage and puts them in the html for the user to view
@@ -244,3 +173,21 @@ function fetch_data(){
     elem = document.getElementById('export_data');
     elem.innerHTML = "<pre>" + JSON.stringify(obj, null, '\t') + "</pre>";
 }
+
+function new_category(){
+    // Grab category name from form
+    category_name = document.getElementById("new_category").value;
+
+    chrome.runtime.sendMessage({subject:'add_label', 'category_name':category_name});
+ 
+    input_box = document.getElementById("new_category")
+    input_box.value = ""
+    ok_mesg = document.createElement('div');
+    ok_mesg.innerHTML = "<p class=\"success\"><b>New category created</b></p>";
+    input_box.parentNode.appendChild(ok_mesg);
+}
+
+document.getElementById('new_category_button').onclick = new_category;
+//document.getElementById('export_button').onclick = fetch_data;
+//redraw_graph();
+

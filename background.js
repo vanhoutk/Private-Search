@@ -47,7 +47,13 @@ function message_recv(message, sender, sendResponse){
         //console.log('ad='+message.ad+'PRI='+pri);
         cat = categories[pri.indexOf(Math.max.apply(Math, pri))];
         sendResponse({ad:message.ad, category: cat});
-    } 
+    } else if (message.subject == 'add_label') {
+        console.log('add_label '+message.category_name);
+        trained_data = addLabel(trained_data, message.category_name);
+        categories = trained_data.labels;;
+        //pri_history.pris.push([]);
+        //TO DO: refresh drop down boxes on user pages
+    }
 }
 
 // Calling this sends a notification to the user

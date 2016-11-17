@@ -2,22 +2,6 @@
  * Extract the adverts from the results page, classifies them into
  * sensitive or non-sensitive and adds a coloured border accordingly.
  */
-function main() {
-    // Get adverts from results page
-    var ads = extractAds();     // HTMLCollection
-    /**/console.log(ads.length + " ads found:\n\n");
-
-    // Extract advert text, remove stop words and stem words
-    var ads_proc = processAds(ads);
-    /**/for(ad of ads_proc)console.log(ad);console.log("---------------\n");
-
-    // /**/console.log("Row sums:");console.log(getRowSums());console.log("Column sums:");console.log(getColSums());
-    var [row_probs, col_probs] = getProbs();
-    /**/console.log("Row probabilities:");console.log(row_probs);console.log("\nColumn probabilities:");console.log(col_probs);console.log("---------------");
-    
-    // Add a border to the adverts according to their classifications
-    highlightAds(ads, ads_proc, row_probs, col_probs);
-}
 
 /**
  * Extract adverts from the currently loaded page.
@@ -47,45 +31,6 @@ function processAds(ads) {
         ads_.push(ad_proc);
     }
     return ads_;
-}
-
-/**
- * Adds a couloured border to the adverts according to their classification:
- * Sensitive: red border; Non-sensitive: green border.
- * @param  {HTMLCollection} ads       Array-like object containing advert elements.
- * @param  {Array}          ads_proc  Arrays of strings representing individual words from the advert text.
- */
-function highlightAds(ads, ads_proc, row_probs, col_probs) {
-    for (var i = 0; i < ads.length; i++) {
-        // Add margin to improve visibility
-        ads.item(i).style.marginBottom = "2px";
-
-        /**/console.log("Ad " + (i+1));
-        // Add a red border if advert is sensitive and green otherwise
-        if (testAd(ads_proc[i], row_probs, col_probs)) {
-            // Sensitive
-            ads.item(i).style.border = "2px dashed red";
-        } else {
-            // Non-sensitive
-            ads.item(i).style.border = "2px dashed green"
-        }
-    }
-}
-
-/* -------------------------- Other functions -------------------------- */
-
-/**
- * [testAd description]
- * @param  {Array}   ad  Array of strings representing individual words from the advert.
- * @return {Boolean}     True if advert is sensitive; false otherwise.
- */
-function testAd(ad, row_probs, col_probs) {
-    var pri = getPRI(ad, row_probs, col_probs);
-    var isSensitive = pri[0] >= pri[1];
-
-    /**/if(isSensitive)console.log("SENSITIVE "+pri[0]);else console.log("other "+pri[1]);console.log("---------------");  
-
-    return pri[0] >= pri[1];
 }
 
 /**
