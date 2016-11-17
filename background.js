@@ -11,14 +11,28 @@ function log(msg){ console.log(msg); }
 var trained_data = training();
 (debug>2)&&log(row_probs); (debug>2)&&log(col_probs);
 
-var t=[], pris=[];
-for( var i=0; i<categories.length; i++){
-    pris[categories[i]] = [];
+// And get the PRI history
+// pri_history is a structure, e.g. pri_history.gambling gives the time history
+// for the gambling topic (the time history is a list of {t:<time>, pri:<value>} points)
+var pri_history_str = localStorage.getItem("pri_history");
+var init_history=false; // change to true to force clearing of pri_history
+if (init_history || pri_history_str == null) {
+  // initialise history
+  (debug>0)&&log("initialising pri_history");
+  var pri_history = {};
+  for (var i=0; i<trained_data.labels.length; i++) {
+    pri_history[trained_data.labels[i]] = {t:[], pri:[]};
+  }
+  localStorage.setItem('pri_history', JSON.stringify(pri_history));
+} else {
+  // load from local storage
+  (debug>0)&&log("reloading pri_history");
+  pri_history = JSON.parse(pri_history_str);
 }
-var pri_history = {'t':t, 'pris':pris};
+probe(trained_data);
 
 
-// Add a listener
+// Add a listener to receive messages from foreground web pages i.e. user pages
 chrome.runtime.onMessage.addListener(message_recv);
 
 // General listening function, the script will receive several different kinds of messages. 
@@ -38,8 +52,8 @@ function message_recv(message, sender, sendResponse){
         sendResponse({subject: 'categories', categories: categories});
         count += 1;
         if (count >=5) {
-          // make a probe
-          probe(trained_data, pri_history);
+          // make a probe every 5 user searches
+          probe(trained_data);
           count=0;
         }
     } else if (message.subject == 'request_pri_score') {
@@ -54,7 +68,7 @@ function message_recv(message, sender, sendResponse){
         sendResponse({ad:message.ad, category: cat});
     } else if (message.subject == 'add_label') {
         // add a new label (advert category)
-        (debug>2)&&console.log('add_label '+message.category_name);
+        (debug>0)&&console.log('add_label '+message.category_name);
         trained_data = addLabel(trained_data, message.category_name);
         categories = trained_data.labels;;
         //pri_history.pris.push([]);

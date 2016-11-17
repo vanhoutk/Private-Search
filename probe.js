@@ -1,5 +1,5 @@
 // Do the probe
-function probe(trained_data, pri_history) {
+function probe(trained_data) {
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=causes+and+symptoms");
 	//xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=poker");
@@ -19,27 +19,42 @@ function probe(trained_data, pri_history) {
             //ads = doc.getElementsByClassName("ads-ad");
             var ads = extractAds(doc);
 
-            console.log('num ads on probe page:'+ads.length);
-            if (ads.length==0) return; // nothing to see here
-
-            var ad_proc = processAds(ads);
-            var pris = [], cats=[];
-            for (var i=0; i<ad_proc.length; i++) {
-                pris[i] = getPRI(trained_data, ad_proc[i]);
-                cats[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
-            }
-            (debug>0)&&log(ad_proc);
-            (debug>0)&&log(cats);
-            (debug>0)&&log(average(pris));
-            
-            // Average pri_arr returns an array of floats.
-            var avg_pri = average(pris);
-            pri_history.t.push(String(Math.floor(Date.now() / 1000)));  // unix timestamp
-            pri_history.pris.push(avg_pri);
+            (debug>0)&&log('num ads on probe page:'+ads.length);
+            var avg_pri=new Array(trained_data.labels.length);
+            avg_pri.fill(0);
+            if (ads.length > 0) {
+              // found some adverts
+              var ad_proc = processAds(ads);
+              var pris = [], cats=[];
+              for (var i=0; i<ad_proc.length; i++) {
+                  pris[i] = getPRI(trained_data, ad_proc[i]);
+                  cats[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
+              }
+              (debug>0)&&log(ad_proc);
+              (debug>0)&&log(cats);
           
-            // update local storage -- not really needed here, just makes sure log is persistent
-            localStorage.setItem('pri_history', JSON.stringify(pri_history));
+              // Average pri_arr returns an array of floats.
+              avg_pri = average(pris);
+              (debug>0)&&log(avg_pris);
+            }
+
+            // load history from local storage
+            (debug>0)&&log("loading pri_history");
+            var pri_history_str = localStorage.getItem("pri_history");
+            var pri_history = JSON.parse(pri_history_str);
+          
+            (debug>0)&&log("updating pri_history with new data");
+            var unixtime = String(Math.floor(Date.now() / 1000));
+            var t=Date.now();
+            for (var i=0; i<trained_data.labels.length; i++) {
+              pri_history[trained_data.labels[i]].t.push(t);
+              pri_history[trained_data.labels[i]].pri.push(avg_pri[i]);
+            }
             (debug>0)&&log(pri_history);
+          
+            // update local storage
+            (debug>0)&&log("saving pri_history");
+            localStorage.setItem('pri_history', JSON.stringify(pri_history));
         }
     };
 }

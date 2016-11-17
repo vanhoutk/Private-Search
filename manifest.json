@@ -26,7 +26,7 @@
   "permissions": ["cookies", "tabs", "contextMenus", "storage", "notifications",  "webRequest", "<all_urls>", "https://cdnjs.cloudflare.com/*"],
 
   "background": { 
-    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data.js", "PRI.js", "background.js", "probe.js"]
+    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data.js", "PRI.js", "probe.js", "background.js"]
  },
 
   "content_scripts": [
