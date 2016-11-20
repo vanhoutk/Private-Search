@@ -5,27 +5,37 @@ function log(msg){ console.log(msg); }
 
 function draw_graph(pri_history){
   
-    var ctx = document.getElementById("myCanvas").getContext("2d");
-    var datasets=[];
+    var x=[], y=[], z=[];
+    x = pri_history['gambling'].t; // assume all categories have same x-axis values, for now
     for (var label in pri_history) {
-       datasets.push({data:pri_history[label].pri, label:label});
-    }
-    var c = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: pri_history.gambling.t,  //TO DO: allow different x-axis points for each curve
-        //datasets: datasets // TO DO: plot is cluttered when plot all categories together
-        datasets: [{
-          label: 'gambling',
-          data: pri_history.gambling.pri
-        }]
-      },
-      options: {
-        scales: {xAxes: [{type: "time",time: {unit:'hour'} }]},
+      y.push(label);
+      z.push([]);
+      for (var xx of x) {
+        z[z.length-1] = pri_history[label].pri;
       }
-    });
- 
-    console.log(pri_history.gambling.pri);
+    }
+    var data = [{
+      z: z,
+      x: x,
+      y: y,
+      type: 'heatmap',
+      colorscale: [[0, 'rgb(255,255,255)'], [0.25, 'rgb(31,120,180)'], [0.45, 'rgb(178,223,138)'],
+      [0.65, 'rgb(51,160,44)'], [0.85, 'rgb(251,154,153)'], [1, 'rgb(227,26,28)']]
+    }];
+    var layout = {
+      xaxis: {
+        type : 'date'
+      },
+      yaxis: {
+        type : 'category'
+      },
+      margin: {
+        t:30, b:50, l:100
+      }
+    };
+    Plotly.newPlot('plot', data, layout);
+    //console.log(data);
+    //console.log(pri_history.gambling.pri);
 }
 
 function new_category(){

@@ -8,9 +8,13 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 
 ## TODO
 
-Add Other/Non-sensitive category to training data
-Classify probe response pages, and log over time ?
-Update to PRI+
+Make sure Other/Non-sensitive category always exists -- add to top of drop-down menu
+Update to PRI+ ?
+Just now PRI calc is sensitive to imbalances in training data e.g if far more adverts tagged for one category than another
+management of categories -- add, remove, restore (after remove), import, export
+plotting needs to be nicer. heatmap ?
+nicer looking tagging of adverts
+add an "about" tab
 
 
 ## Timeline
