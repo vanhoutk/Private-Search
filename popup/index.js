@@ -9,10 +9,7 @@ function draw_graph(pri_history){
     x = pri_history['gambling'].t; // assume all categories have same x-axis values, for now
     for (var label in pri_history) {
       y.push(label);
-      z.push([]);
-      for (var xx of x) {
-        z[z.length-1] = pri_history[label].pri;
-      }
+      z.push(pri_history[label].pri);
     }
     var data = [{
       z: z,
