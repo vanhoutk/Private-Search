@@ -18,7 +18,7 @@ function init(request, sender, sendResponse){
   if(request.subject != 'categories'){
     console.log('ERROR: init() called with subject='+request.subject);
   }
-  (debug>0)&&log('init'+request.categories);
+  (debug>0)&&log('init '+request.categories);
   
   // get adverts in page
   var ads = extractAds(document);

@@ -144,12 +144,16 @@ function addTrainingData(trained_data, ad_txt, label) {
       if (trained_data.keywords.indexOf(ad)<0) {
          trained_data.keywords.push(ad);
          (debug>0)&&log('added '+ad);
-      }
+         // update count matrix with a new column for this keyword
+         var j = trained_data.keywords.length-1;
+         for (var i=0; i<trained_data.labels.length; i++) {
+           trained_data.count_matrix[i][j]=0;
+    }
+     }
     }
     //trained_data.keywords = getUniqueWords(trained_data.keywords,1);
     //console.log(trained_data.keywords.length);
 
-    // update count matrix
     for (var token of ad_txt) {
         var keyword_index = trained_data.keywords.indexOf(token);
         trained_data.count_matrix[label_index][keyword_index]++;
@@ -246,6 +250,7 @@ function getColSums(count_matrix) {
 		for (var j = 0; j < n_rows; j++) {
 			sum += count_matrix[j][i];
 		}
+    if (sum==0) {sum=1;};
 		col_sums.push(sum);
 	}
 	return col_sums;
@@ -292,15 +297,24 @@ function getProbs(count_matrix, labels, keywords) {
 			row_probs[i][j] = count_matrix[i][j] / row_sums[i];
 		}
 	}
-	
+	//log(row_probs);
+  //log(len_kw);
+  //log(col_sums);
 	/* --- Column probabilities --- */
 	var col_probs = [];
 	// Calculate total sum
-	var total_sum = col_sums.reduce((a,b) => a + b, 0);
+	var total_sum = 0;
+  for (var i = 0; i < len_kw; i++) {
+    total_sum += col_sums[i];
+  }
+  //log(total_sum);
+  if (total_sum==0) {total_sum=1;};
 	// Divide column sums by total sum
 	for (var i = 0; i < len_kw; i++) {
 		col_probs.push(col_sums[i]/total_sum);
 	}
+  //log(col_probs);
+
 	return [row_probs, col_probs];
 }
 /**

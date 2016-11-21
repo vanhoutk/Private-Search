@@ -15,7 +15,7 @@ var trained_data = training();
 // pri_history is a structure, e.g. pri_history.gambling gives the time history
 // for the gambling topic (the time history is a list of {t:<time>, pri:<value>} points)
 var pri_history_str = localStorage.getItem("pri_history");
-var init_history=false; // change to true to force clearing of pri_history
+var init_history=true; // change to true to force clearing of pri_history
 if (init_history || pri_history_str == null) {
   // initialise history
   (debug>0)&&log("initialising pri_history");
