@@ -35,7 +35,7 @@ function probe(trained_data) {
           
               // Average pri_arr returns an array of floats.
               avg_pri = average(pris);
-              (debug>0)&&log(avg_pris);
+              (debug>0)&&log(avg_pri);
             }
 
             // load history from local storage

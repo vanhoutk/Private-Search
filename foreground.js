@@ -24,66 +24,128 @@ function init(request, sender, sendResponse){
   var ads = extractAds(document);
   (debug>0)&&log('num ads on user page: '+ads.length);
   categories = request.categories;
+  
   // now construct a button and drop down box and add to each advert in turn
   for (var i=0; i<ads.length; i++){
     // extract text from advert and tokenize.  do this here, before we add text
     // in select drop down box etc to the advert
     var ad_proc = processAds([ads[i]]);
-
-    // create select drop down box with possible advert categories
-    var s = '<select><option value="null">Select a Category</option>'; // HTML string
-    for(var j=0; j<categories.length; j++){
-      s += '<option value="';
-      s += categories[j];
-      s += '">';
-      s += categories[j];
-      s += '</option>';
-    }
-    s += '</select>';
-    // and create a button
-    var btn = '<button class="category_add_button">Add to Category</button>'
-    var div = document.createElement('div');
-    div.innerHTML = s;
-    ads[i].appendChild(div.childNodes[0]);
-    div.innerHTML = btn
-    ads[i].appendChild(div.childNodes[0]);
     
-    button = div.childNodes[0];
-    ads[i].childNodes[ads[i].childNodes.length-1].onclick = add_ad_to_category;
- 
     // estimate category of this advert using PRI score.  need to use backend to calc PRI score
     chrome.runtime.sendMessage({subject:'request_pri_score', ad_text: ad_proc[0], ad: ads[i].getAttribute('data-hveid')}, function (request) {
       (debug>2)&&console.log('category='+request.category+',ad='+request.ad);
       ad=document.querySelectorAll('[data-hveid="'+request.ad+'"]');
+      
+      // id for this html, so that we can easily find this element again
+      var id = Math.random().toString(36).substr(2, 8);
+      
+      // tag advert with suggested category
       suspected = document.createElement('div');
-      suspected.innerHTML = '<b>Suggested Category</b>: '+request.category;
+      suspected.dataset.pri_id = id;
+      suspected.dataset.pri_cat = request.category;
+      suspected.innerHTML = '<b>Suggested Category</b>: '+request.category+'&nbsp;&nbsp;';
+      var elem = document.createElement("img"), elem2 = document.createElement("img");
+      elem.src = chrome.extension.getURL('tick.png');
+      elem.style = 'width: 20px; vertical-align:bottom; cursor:pointer;';
+      elem.dataset.img1_pri_id = id;
+      elem.onclick = confirm_category;
+      elem.onmouseenter = function() {this.style.filter = "brightness(120%)"};
+      elem.onmouseleave = function() {this.style.filter = ""};
+      suspected.appendChild(elem);
+      elem2.src = chrome.extension.getURL('cross.png');
+      elem2.style = 'width: 25px; vertical-align:bottom; cursor:pointer; ';
+      elem2.dataset.img2_pri_id = id;
+      elem2.onclick = showdropdown;
+      elem2.onmouseenter = function() {this.style.filter = "brightness(120%)"};
+      elem2.onmouseleave = function() {this.style.filter = ""};
+      suspected.appendChild(elem2);
       ad[0].appendChild(suspected);
-    }) ;
+                               
+      // create drop down box
+      var s = '<select><option value="null">Select a Category</option>'; // HTML string
+      for(var j=0; j<categories.length; j++){
+        if (categories[j] == request.category) {
+          s += '<option selected value="';  // mark suggested value as the default
+        } else {
+          s += '<option value="';
+        }
+        s += categories[j];
+        s += '">';
+        s += categories[j];
+        s += '</option>';
+      }
+      s += '</select>';
+      var select = document.createElement('div');
+      select.dataset.select_pri_id = id;
+      select.innerHTML = s;
+      // and create a button
+      select.innerHTML += '<button class="category_add_button">Add to Category</button>';
+      select.style.display='none'; // hide this for now
+      ad[0].appendChild(select);
+      }) ;
    }
 
   (debug>0)&&log('init completed.');
 };
 
+function showdropdown(){
+  // get the select element with drop down box etc
+  var select = document.querySelectorAll('[data-select_pri_id="'+this.dataset.img2_pri_id+'"]');
+  // and make it visible
+  select[0].style.display='inline';
+  // and activate the button
+  select[0].childNodes[1].onclick = add_ad_to_category;
+}
 
 function add_ad_to_category(){
-    // tag advert as being in a particular category.  this is used to train PRI.
-    select = this.previousSibling; // get select drop down box
-    name_of_category = select.options[select.selectedIndex].value;
-    (debug>0)&&log('Adding ad to '+name_of_category);
+  // tag advert as being in a particular category.  this is used to train PRI.
+  
+  // get the selection from the drop down box
+  var selectbox = this.previousSibling; // get select drop down box
+  var name_of_category = selectbox.options[selectbox.selectedIndex].value;
+  (debug>0)&&log('Adding ad to '+name_of_category);
 
-    // Clone the ad and remove what we added so we get an accurate processing of the ad text
-    elem = select.parentElement.cloneNode(true);
-    elem.removeChild(elem.childNodes[elem.childNodes.length-1]); // "suggested category"
-    elem.removeChild(elem.childNodes[elem.childNodes.length-1]); // button
-    elem.removeChild(elem.childNodes[elem.childNodes.length-1]); // select drop down box
+  var select = this.parentElement; // the select box plus button
+  
+  // Clone the ad and remove what we added so we get an accurate processing of the ad text
+  var ad = select.parentElement.cloneNode(true);
+  ad.removeChild(ad.childNodes[ad.childNodes.length-1]); // "suggested category"
+  ad.removeChild(ad.childNodes[ad.childNodes.length-1]); // button and select drop down box
 
-    keywords = processAds([elem]); // stem and tokenise
-    chrome.runtime.sendMessage(message={subject:'add_training_data', label: name_of_category, keywords: keywords});
-    (debug>0)&&log('+' + name_of_category + '::' + keywords);
+  add_to_category(ad,name_of_category);
 
-    parent = this.parentElement;
-    msg = parent.childNodes[parent.childNodes.length-1];
-    msg.innerHTML = '<b>Category</b>:'+name_of_category;
+  // update suggested category
+  var div = document.querySelectorAll('[data-pri_id="'+select.dataset.select_pri_id+'"]');
+  div[0].innerHTML = '<b>Category</b>:'+name_of_category;
+  
+  // hide drop down box
+  select.style.display="none";
+}
+
+function confirm_category() {
+  //get the div we've added to the advert
+  var div = document.querySelectorAll('[data-pri_id="'+this.dataset.img1_pri_id+'"]');
+  var name_of_category = div[0].dataset.pri_cat; /// get the suggested category for advert
+
+  // Clone the ad and remove what we added so we get an accurate processing of the ad text
+  var ad = div[0].parentElement.cloneNode(true);
+  ad.removeChild(ad.childNodes[ad.childNodes.length-1]); // "suggested category"
+  ad.removeChild(ad.childNodes[ad.childNodes.length-1]); // button and select drop down box
+
+  add_to_category(ad,name_of_category);
+
+  // update suggested category
+  div[0].innerHTML = '<b>Category</b>:'+name_of_category;
+  
+  // hide drop down box
+  var select = document.querySelectorAll('[data-select_pri_id="'+this.dataset.img1_pri_id+'"]');
+  select[0].style.display="none";
+}
+
+function add_to_category(elem,name_of_category) {
+  keywords = processAds([elem]); // stem and tokenise
+  chrome.runtime.sendMessage(message={subject:'add_training_data', label: name_of_category, keywords: keywords});
+  (debug>0)&&log('+' + name_of_category + '::' + keywords);
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
