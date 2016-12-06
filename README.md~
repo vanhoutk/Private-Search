@@ -35,4 +35,3 @@ add an "about" tab
 - 15/09/16 - Still have bug with ads not being detected when dev console is not open. New task to add the suggested label also.
 - 19/09/16 - Did a lot of tidying of the code today, general cleaning up. Trying to get the graph working properly, i'm a bit closer but not there yet.
 - 16/11/16 - Major debug by DL.  Code tidy-up -- removed most global vars etc
-- 3/12/16 - KV - Changed the foreground function so the ads are correctly found after a search.
