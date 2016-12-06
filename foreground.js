@@ -31,7 +31,7 @@ function init(request, sender, sendResponse){
       
     // console.log (ads[i].innerHTML)
      //check if there is a dropdown box
-	  if  (ads[i].innerHTML.indexOf('Suggested Category') == -1) {
+	  if  (ads[i].innerHTML.indexOf('Suggested Category') == -1 && ads[i].innerHTML.indexOf('Category') == -1) {
             // extract text from advert and tokenize.  do this here, before we add text
             // in select drop down box etc to the advert
             console.log ("processing: " + i)
