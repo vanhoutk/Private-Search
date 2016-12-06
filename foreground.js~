@@ -214,7 +214,6 @@ browser.runtime.onMessage.addListener(request => {
   if (request.instruction== "CheckAds"){
       //init();
       //chrome.runtime.sendMessage({subject:'test'}, function (rq){ console.log (msg.response)});
-	  (debug>0)&&log('Page is a google page... request categories info from add-on');
 	  chrome.runtime.sendMessage({subject:'request_categories'}, init) ;
    }
   return Promise.resolve({response: "Hi from content script"});

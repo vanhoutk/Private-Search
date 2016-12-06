@@ -3,12 +3,15 @@
  * Extract the adverts from the results page, classifies them into
  * sensitive or non-sensitive and adds a coloured border accordingly.
  */
+ 
+ 
 /**
  * Extract adverts from the currently loaded page.
  * @return {HTMLCollection}  Array-like object of advert elements.
  */
 function extractAds(doc) {
     // Google ads have class="ads-ad"
+   // console.log ("getting Ads: " + doc.readyState);
     return doc.getElementsByClassName("ads-ad");
 }
 /**

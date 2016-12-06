@@ -38,7 +38,6 @@ function onError(error) {
 
 // Add a listener to receive messages from foreground web pages i.e. user pages
 chrome.runtime.onMessage.addListener(message_recv);
-
 // General listening function, the script will receive several different kinds of messages. 
 // The subject needs to be checked in order to distinguish what the messages are for.
 var count=0;

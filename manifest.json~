@@ -8,6 +8,13 @@
     "48": "Icons/icon-48.png"
   },
 
+  "applications": {
+    "gecko": {
+      "id": "privaddon@local",
+      "strict_min_version": "45.0"
+    }
+  },
+
   "browser_action": {
     "browser_style": false,
     "default_icon": "Icons/icon-48.png",
