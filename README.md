@@ -8,13 +8,12 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 
 ## TODO
 
-Make sure Other/Non-sensitive category always exists -- add to top of drop-down menu
-Update to PRI+ ?
-Just now PRI calc is sensitive to imbalances in training data e.g if far more adverts tagged for one category than another
-management of categories -- add, remove, restore (after remove), import, export
-plotting needs to be nicer. heatmap ?
-nicer looking tagging of adverts
-add an "about" tab
+- Update to PRI+ ?
+- Get working with Chrome and Scripted Browser
+- Just now PRI calc is sensitive to imbalances in training data e.g if far more adverts tagged for one category than another
+- Management of categories -- add, remove, restore (after remove), import, export
+- Add an "about" tab
+- Improve the training_data.js
 
 
 ## Timeline
@@ -35,4 +34,5 @@ add an "about" tab
 - 15/09/16 - Still have bug with ads not being detected when dev console is not open. New task to add the suggested label also.
 - 19/09/16 - Did a lot of tidying of the code today, general cleaning up. Trying to get the graph working properly, i'm a bit closer but not there yet.
 - 16/11/16 - Major debug by DL.  Code tidy-up -- removed most global vars etc
-- 3/12/16 - KV - Changed the foreground function so the ads are correctly found after a search.
+- 3/12/16 - KVH - Added an alarm instead of DOMContentLoaded to ensure ads are correctly found after a search.
+- 6/12/16 - KVH - Tidy up and comment of code. Edit to foreground to prevent multiple instances of 'suggested category'.

@@ -1,35 +1,28 @@
 /* -------------------------- Main functions -------------------------- */
 /**
- * Extract the adverts from the results page, classifies them into
- * sensitive or non-sensitive and adds a coloured border accordingly.
- */
- 
- 
-/**
  * Extract adverts from the currently loaded page.
  * @return {HTMLCollection}  Array-like object of advert elements.
  */
 function extractAds(doc) {
     // Google ads have class="ads-ad"
-   // console.log ("getting Ads: " + doc.readyState);
     return doc.getElementsByClassName("ads-ad");
 }
 /**
- * Extracts the text from the adverts and tokenizes it.
+ * Extracts the text from the adverts and tokenises it (removes the stop words and stems the remaining words).
  * @param  {HTMLCollection} ads  Array-like object containing advert elements.
  * @return {Array}               Arrays of strings representing individual words from the advert text.
  */
 function processAds(ads) {
-    var ads_ = [];
-    var ad_proc;
+    var ads_words = [];
+    var ad_text;
     for (var ad of ads) {
         // Extract advert text
-        ad_proc = getAdText(ad);
-        // Tokenise advert text (remove stop words and stem words)
-        ad_proc = tokeniseText(ad_proc);
-        ads_.push(ad_proc);
+        ad_text = getAdText(ad);
+        // Tokenise advert text (remove stop words and stem the remaining words)
+        ad_text = tokeniseText(ad_text);
+        ads_words.push(ad_text);
     }
-    return ads_;
+    return ads_words;
 }
 /**
  * Extracts text of advert elements recursively.
@@ -37,7 +30,7 @@ function processAds(ads) {
  * @return {String}          Advert text.
  */
 function getAdText(ad) {
-    var txt = '';
+    var text = '';
     var ignore_nodes = ad.className == "_lBb"       // Ad notice
                     || ad.className == "_mB"        // Ad icon
                     || ad.className == "_WGk"       // Ad url
@@ -48,13 +41,13 @@ function getAdText(ad) {
     // Recurse down into inner nodes until a text node is reached
     if (ad.hasChildNodes() && !ignore_nodes) {
         for (var i = 0; i < num_children; i++) {
-            txt += getAdText(ad.childNodes[i]);
+            text += getAdText(ad.childNodes[i]);
         }
     } else if (ad.nodeType === Node.TEXT_NODE && !ignore_nodes){
         // Append text from node
-        txt += ad.textContent + ' ';
+        text += ad.textContent + ' ';
     }
-    return txt;
+    return text;
 }
 
 

@@ -114,15 +114,16 @@ function sendMessageToTabs(tabs) {
  }
 
 function onClearedAll(wasCleared) {
-  console.log(wasCleared);  // true/false
+    log(wasCleared);  // true/false
 }
 
 var clearAlarms = browser.alarms.clearAll();
 clearAlarms.then(onClearedAll);
+
 browser.alarms.create("AdsAlarm", {delayInMinutes: 0.1, periodInMinutes: 0.1} );
 
 browser.alarms.onAlarm.addListener((alarm) => {
-	//console.log("Alarm raised",alarm);
+	log("Alarm raised");
     var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
     gettingActiveTab.then(sendMessageToTabs, onError);
 	

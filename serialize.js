@@ -24,6 +24,13 @@ function serializeArray(arr) {
 	return arr.join();
 }
 
+/**
+ * Converts a string into a matrix (2-dimensional Array).
+ * Rows of the matrix are separated by ';'.
+ * Individual values are separated by ','.
+ * @param  {String} matrix_str String representing the matrix.
+ * @return {Array}             2d Array representing the matrix.
+ */
 function deserializeMatrix(matrix_str) {
 	// Isolate the rows of the matrix
 	var rows = matrix_str.split(';');
