@@ -8,12 +8,13 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 
 ## TODO
 
-- Update to PRI+ ?
-- Get working with Chrome and Scripted Browser
+- KVH - Update to PRI+ ?
+- KVH - Get working with Chrome and Scripted Browser
 - Just now PRI calc is sensitive to imbalances in training data e.g if far more adverts tagged for one category than another
 - Management of categories -- add, remove, restore (after remove), import, export
 - Add an "about" tab
-- Improve the training_data.js
+- KVH - Improve the training_data.js
+- KVH - Add functionality for exporting the pri history
 
 
 ## Timeline

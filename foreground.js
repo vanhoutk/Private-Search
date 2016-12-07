@@ -3,9 +3,9 @@
     It gets the ads on the current page and adds the suggested category as well as adding a select box to each ad allowing the user to add an ad to a category.
 
     Note that a certain amount of communication has to be done between this script and background.js.
-    since index.js only has access to the localStorage for the current webpage and not the addons localStorage, we must retrieve the categories list from background.js
+    since foreground.js only has access to the localStorage for the current webpage and not the addons localStorage, we must retrieve the categories list from background.js
 
-    Then, when the user adds an ad to a category, index.js must communicate this back to background.js with the full text of the ad.
+    Then, when the user adds an ad to a category, foreground.js must communicate this back to background.js with the full text of the ad.
 */
 
 var debug = 1; // controls level of logging to console, 0=no logging, 1=basic logging
