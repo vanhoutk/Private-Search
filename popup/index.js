@@ -51,12 +51,57 @@ function new_category()
 
 function export_pri_history()
 {
-    // TODO: Add functionality for exporting
+    var current_pri_history = localStorage.getItem("pri_history");
+    var current_time = Date.now();
+    var file_name = "PRI_history_at_" + current_time.toString() + ".json";
+
+    log("export_pri_history(): " + current_pri_history);
+
+    console.save(current_pri_history, file_name);
+
+    //window.location = "data:text/json, " + current_pri_history; 
+
+    /*chrome.downloads.download({
+        url: "data:text/json, " + current_pri_history,
+        filename: file_name,
+        conflictAction: "uniquify", // or "overwrite" / "prompt"
+        saveAs: false, // true gives save-as dialogue
+    }, function(downloadId) {
+        console.log("Downloaded item with ID", downloadId);
+    });*/
 }
 
 document.getElementById('new_category_button').onclick = new_category;
 document.getElementById('export_button').onclick = export_pri_history;
 
+// Function for saving the pri history to the user's downloads
+// Source: http://bgrins.github.io/devtools-snippets/#console-save
+(function(console){
+
+    console.save = function(data, filename){
+
+        if(!data) {
+            console.error('Console.save: No data')
+            return;
+        }
+
+        if(!filename) filename = 'console.json'
+
+        if(typeof data === "object"){
+            data = JSON.stringify(data, undefined, 4)
+        }
+
+        var blob = new Blob([data], {type: 'text/json'}),
+            e    = document.createEvent('MouseEvents'),
+            a    = document.createElement('a')
+
+        a.download = filename
+        a.href = window.URL.createObjectURL(blob)
+        a.dataset.downloadurl =  ['text/json', a.download, a.href].join(':')
+        e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+        a.dispatchEvent(e)
+    }
+})(console)
 
 // Load history from local storage
 (debug > 0) && log("popup/index: Loading pri_history");
@@ -68,4 +113,3 @@ if (pri_history_str)
     pri_history = JSON.parse(pri_history_str);
     draw_graph(pri_history);
 }
-
