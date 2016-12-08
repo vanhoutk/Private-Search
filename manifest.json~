@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "manifest_version": 2,
   "name": "PRI addon",
@@ -8,20 +9,12 @@
     "48": "Icons/icon-48.png"
   },
 
-  "applications": {
-    "gecko": {
-      "id": "privaddon@local",
-      "strict_min_version": "45.0"
-    }
-  },
-
   "browser_action": {
     "browser_style": false,
     "default_icon": "Icons/icon-48.png",
     "default_title": "History",
     "default_popup": "popup/history.html"
   },
- 
 
   "permissions": ["cookies","alarms", "tabs", "contextMenus", "storage", "notifications",  "webRequest", "<all_urls>"],
 
@@ -42,5 +35,45 @@
   "web_accessible_resources": [
     "tick.png", "cross.png"
   ]
+}
+=======
+{
+  "manifest_version": 2,
+  "name": "PRI addon",
+  "version": "0.0.1",
+
+  "description": "Infers learning by google of user interests",
+  "icons": {
+    "48": "Icons/icon-48.png"
+  },
+
+  "browser_action": {
+    "browser_style": false,
+    "default_icon": "Icons/icon-48.png",
+    "default_title": "History",
+    "default_popup": "popup/history.html"
+  },
+ 
+
+  "permissions": ["cookies", "tabs", "contextMenus", "storage", "notifications",  "webRequest", "<all_urls>"],
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self' ",
+
+  "background": { 
+    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data.js", "PRI.js", "probe.js", "background.js"]
+ },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.google.com/*", "*://*.google.ie/*", "*://*.google.co.uk/*", "*://*.google.com.au/*", "*://*.google.co.nz/*", "*://*.google.ca/*"],
+      "js": ["text_handling.js","ad_processing.js","foreground.js"],
+      "run_at":    "document_start"
+    }
+  ],
+    
+   "web_accessible_resources": [
+        "tick.png", "cross.png"
+  ]
 
 }
+>>>>>>> 9d2fc929dfceeeea42a19761476ed53e6764c5bd

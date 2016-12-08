@@ -152,7 +152,3 @@ browser.alarms.onAlarm.addListener((alarm) => {
     var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
     gettingActiveTab.then(sendMessageToTabs, onError);
 });
-
-
-
-
