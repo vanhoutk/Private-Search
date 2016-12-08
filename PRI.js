@@ -203,9 +203,7 @@ function addTrainingData(trained_data, ad_text, label) {
             (debug > 0) && log('addTrainingData(): Added new keyword = ' + keyword);
 
             // Update the count matrix with a new column for this keyword
-            // TODO: Removing the +1 as it should be an extra column
-            // var j = trained_data.keywords.length - 1;
-            var j = trained_data.keywords.length;
+            var j = trained_data.keywords.length - 1;
             for (var i=0; i < trained_data.labels.length; i++)
             {
                 trained_data.count_matrix[i][j]=0;
