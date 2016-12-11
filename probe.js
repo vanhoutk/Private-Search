@@ -73,7 +73,7 @@ function probe(trained_data)
     };
 }
 
-
+// TODO : SUM instead of average
 // TODO: Possibly change the logic here
 // Get the average of each of the lists provided in a list
 function average(nums)

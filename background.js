@@ -68,13 +68,13 @@ function message_recv(message, sender, sendResponse)
         // Reply with the list of advert categories from the trained data
         if (!sendResponse) {log('ERROR: message_recv() called without sendResponse');}
         sendResponse({subject: 'categories', categories: categories});
-        count += 1;
-        if (count >= 5) // TODO: Check if this logic still works because of the alarm, may need to add a new message to update the count
-        {
-            // Make a probe every 5 user searches
-            probe(trained_data);
-            count = 0;
-        }
+        //count += 1;
+        //if (count >= 5) // TODO: Check if this logic still works because of the alarm, may need to add a new message to update the count
+        //{
+        //    // Make a probe every 5 user searches
+        //    probe(trained_data);
+        //    count = 0;
+        //}
     }
     else if (message.subject == 'request_pri_score')
     {
@@ -118,7 +118,7 @@ function notify(message)
     });
 }
 
-function sendMessageToTabs(tabs)
+/*function sendMessageToTabs(tabs)
 {
     for (let tab of tabs)
     {
@@ -151,4 +151,4 @@ browser.alarms.onAlarm.addListener((alarm) => {
 	log("Alarm raised");
     var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
     gettingActiveTab.then(sendMessageToTabs, onError);
-});
+});*/

@@ -25,7 +25,7 @@ function init(request, sender, sendResponse)
     (debug > 0) && log('init(): categories = ' + request.categories);
 
     // Get adverts in page
-    var ads = extractAds(content.document);
+    var ads = extractAds(document);
 
     (debug > 0) && log('Number of ads on current user page: ' + ads.length);
 
@@ -35,8 +35,8 @@ function init(request, sender, sendResponse)
     for (var i = 0; i < ads.length; i++)
     {
         // Check if there is already a drop-down box or a category has already been selected
-	    if(ads[i].innerHTML.indexOf('Suggested Category') == -1 && ads[i].innerHTML.indexOf('Category') == -1)
-	    {
+	    //if(ads[i].innerHTML.indexOf('Suggested Category') == -1 && ads[i].innerHTML.indexOf('Category') == -1)
+	    //{
             // Extract text from the advert and tokenize. Need to do this before adding text to the drop down box for suggested category.
             (debug > 0) && log ("Processing ad: " + i);
 
@@ -113,7 +113,7 @@ function init(request, sender, sendResponse)
                 // Append the div to the bottom of the ad.
                 ad[0].appendChild(select);
             }) ;
-        }
+        //}
     }
 
     (debug > 0) && log('init(): completed.');
@@ -183,11 +183,42 @@ function add_to_category(elem,name_of_category)
     (debug > 0) && log('+' + name_of_category + '::' + keywords);
 }
 
+// Function which checks that everything in the page has finished loading
+// Source: http://callmenick.com/post/check-if-everything-loaded-with-javascript
+var everythingLoaded = setInterval(function() {
+    if (/loaded|complete/.test(document.readyState)) 
+    {
+        var ads = extractAds(document);
+        var requested_categories = false;
+        for (var i = 0; i < ads.length; i++)
+        {
+            // Check if there is already a drop-down box or a category has already been selected
+            if(ads[i].innerHTML.indexOf('Suggested Category') == -1 && ads[i].innerHTML.indexOf('Category') == -1 && !requested_categories)
+            {
+                requested_categories = true;
+                //clearInterval(everythingLoaded);
+                log('Page Loaded' + document.readyState + '::' + document.getElementsByClassName("ads-ad").length);
+                chrome.runtime.sendMessage({subject:'request_categories'}, init) ; // this is the function that gets called when everything is loaded
+            }
+        }
+    }
+}, 1000);
+
+/*document.onreadystatechange = function() {
+    log("Readystate change: " + document.readyState);
+}
+
+function locationHashChanged() {
+    log("Hash changed");
+}
+
+window.onhashchange = locationHashChanged;*/
+
 // Alarm in the background script cases this to be called whenever we're on a google page
-chrome.runtime.onMessage.addListener(request => {
+/*chrome.runtime.onMessage.addListener(request => {
     if (request.instruction == "CheckAds"){
 	    (debug > 0) && log('Current tab is a google webpage. Request categories info from add-on.');
 	    chrome.runtime.sendMessage({subject:'request_categories'}, init) ;
     }
     return Promise.resolve({response: "Request Categories Sent."});
-});
+});*/

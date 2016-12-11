@@ -336,12 +336,13 @@ function getColSums(count_matrix)
 function getPRI(trained_data, ad)
 {
 	// Get the frequency of the words in the advert appearing in the training data
-    //word_freq is a 2d array of [number of times a keyword from the ad appears in the keywords/number of times any keyword from the ad appears in the keywords]
+    // word_freq is a 2d array of [number of times a keyword from the ad appears in the keywords/number of times any keyword from the ad appears in the keywords]
 	var word_freq = getWordFreq(trained_data.keywords, ad);
 
 	var pri = [];
 
-	var labels_length = trained_data.labels.length, words_length = word_freq.length;
+	var labels_length = trained_data.labels.length;
+    var words_length = word_freq.length; // Word_freq.length = trained_data.keywords.length
 	// Calculate the PRI for each label
 	for (var i = 0; i < labels_length; i++)
 	{
@@ -350,6 +351,7 @@ function getPRI(trained_data, ad)
 		{
 			sum += (word_freq[j] * trained_data.row_probs[i][j]) / trained_data.col_probs[j];
 		}
+        // PRI(label, user{probe} interaction) = SUM_forall keywords([relative frequency(RF) of the words in the advert] * [RF of words in ads in training data associated with label] / [RF of words in all ads in training data])
 		pri.push(sum);
 	}
 
