@@ -183,6 +183,13 @@ function add_to_category(elem,name_of_category)
     (debug > 0) && log('+' + name_of_category + '::' + keywords);
 }
 
+/**
+ * Note regarding the polling function: The commented version below works perfectly the first time a user searches 
+ * through the url bar and doesn't have repeat polling, but doesn't function for multiple searches. Ideally a 
+ * listener for when a user carries out a search would be implemented, but I have yet to figure out quite how to do
+ * so. I have tried onhashchange and onreadystatechange, but neither of these works.
+ */
+
 // Function which checks that everything in the page has finished loading
 // Source: http://callmenick.com/post/check-if-everything-loaded-with-javascript
 var everythingLoaded = setInterval(function() {
@@ -203,6 +210,15 @@ var everythingLoaded = setInterval(function() {
         }
     }
 }, 1000);
+
+/*var everythingLoaded = setInterval(function() {
+    if (/loaded|complete/.test(document.readyState)) 
+    {
+        clearInterval(everythingLoaded);
+        log('Page Loaded' + document.readyState + '::' + document.getElementsByClassName("ads-ad").length);
+        chrome.runtime.sendMessage({subject:'request_categories'}, init) ; // this is the function that gets called when everything is loaded
+    }
+}, 100);*/
 
 /*document.onreadystatechange = function() {
     log("Readystate change: " + document.readyState);

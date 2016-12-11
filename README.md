@@ -14,7 +14,6 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 - Management of categories -- add, remove, restore (after remove), import, export
 - Add an "about" tab
 - KVH - Improve the training_data.js
-- KVH - Add functionality for exporting the pri history
 
 
 ## Timeline
@@ -37,3 +36,5 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 - 16/11/16 - Major debug by DL.  Code tidy-up -- removed most global vars etc
 - 3/12/16 - KVH - Added an alarm instead of DOMContentLoaded to ensure ads are correctly found after a search.
 - 6/12/16 - KVH - Tidy up and comment of code. Edit to foreground to prevent multiple instances of 'suggested category'.
+- 8/12/16 - KVH - Added functionality to export pri history
+- 11/12/16 - KVH - Changed the alarm to a polling function in the foreground.js so it only runs on google pages. Now works on Chrome and Firefox.

@@ -68,14 +68,19 @@ function message_recv(message, sender, sendResponse)
         // Reply with the list of advert categories from the trained data
         if (!sendResponse) {log('ERROR: message_recv() called without sendResponse');}
         sendResponse({subject: 'categories', categories: categories});
-        //count += 1;
-        //if (count >= 5) // TODO: Check if this logic still works because of the alarm, may need to add a new message to update the count
-        //{
-        //    // Make a probe every 5 user searches
-        //    probe(trained_data);
-        //    count = 0;
-        //}
+
+        count += 1;
+        if (count >= 2) // TODO: Need to update this logic to account for user searches correctly
+        {
+            // Make a probe every 5 user searches
+            probe(trained_data);
+            count = 0;
+        }
     }
+    /*else if (message.subject == "make_probe")
+    {
+        probe(trained_data);
+    }*/
     else if (message.subject == 'request_pri_score')
     {
         // Given an advert, calculate its PRI score and reply with the suggested label

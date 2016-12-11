@@ -2,7 +2,8 @@ function probe(trained_data)
 {
     var xmlHttp = new XMLHttpRequest();
     //xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=causes+and+symptoms");
-    xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=help+and+advice");
+    //xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=help+and+advice");
+    xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=poker");
     xmlHttp.withCredentials = true;
     xmlHttp.send();
 
@@ -23,31 +24,30 @@ function probe(trained_data)
 
             (debug > 0) && log ('probe(): Number of ads on probe page: ' + ads.length);
 
-            // Create a new array and fill it with 0s
-            var average_pri = new Array(trained_data.labels.length);
-            average_pri.fill(0);
-
             if (ads.length > 0)
             {
                 // Process the ads and return an array of arrays of the words in the ad with stop words removed and the remaining words stemmed.
                 var ads_words = processAds(ads);
                 var pris = [], categories=[];
+                var ads_words_joined = [];
 
-                // Cycle through the array for each ad and
-                for (var i = 0; i < ads_words.length; i++) {
-                    pris[i] = getPRI(trained_data, ads_words[i]); // pris is now a 2d matrix of pri[ad][pri for each label]
-                    // Get the label corresponding to the max pri value returned for the ad
-                    categories[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
+                // Join all of the individual ad arrays to form a single array of the words in the ads on the page
+                for(var i = 0; i < ads_words.length; i++)
+                {
+                    //log(ads_words[i]);
+                    for(var j = 0; j < ads_words[i].length; j++)
+                    {
+                        ads_words_joined.push(ads_words[i][j]);
+                    }
+                    //log(ads_words_joined);
                 }
 
-                // average(pris) sums up the total pris for each ad and divides them by the number of labels.
-                // average_pri is a 1d
-                // TODO: Comment this properly
-                average_pri = average(pris);
+                pris[i] = getPRI(trained_data, ads_words_joined);
+                categories[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
 
-                (debug > 0) && log(ads_words);
+                (debug > 0) && log(ads_words_joined);
                 (debug > 0) && log(categories);
-                (debug > 0) && log(average_pri);
+                (debug > 0) && log(pris);
             }
 
             // Load the PRI history from local storage
@@ -62,7 +62,7 @@ function probe(trained_data)
 
             for (var i = 0; i < trained_data.labels.length; i++) {
                 pri_history[trained_data.labels[i]].t.push(t);
-                pri_history[trained_data.labels[i]].pri.push(average_pri[i]);
+                pri_history[trained_data.labels[i]].pri.push(pris[i]);
             }
 
             (debug > 0) && log(pri_history);
@@ -71,38 +71,4 @@ function probe(trained_data)
             localStorage.setItem('pri_history', JSON.stringify(pri_history));
         }
     };
-}
-
-// TODO : SUM instead of average
-// TODO: Possibly change the logic here
-// Get the average of each of the lists provided in a list
-function average(nums)
-{
-    if (nums.length === 0)
-    {
-        return [-1];
-    }
-
-    var total = [];
-    var length = nums.length;
-    var i = 0;
-
-    // Loop on the lists and get their totals
-    while (i < length)
-    {
-        total.push(0);
-        for(var j = 0; j < nums[i].length; j++){
-            total[i] += parseFloat(nums[i][j]);
-        }
-        i++;
-    }
-    var average = []; 
-
-    // Loop on the totals and divide by the length of each list
-    for(var i = 0; i < total.length; i++){
-        average.push(total[i]/nums[i].length);
-    }
-
-    // Return a list of the averages of the lists
-    return average;
 }
