@@ -352,7 +352,7 @@ function getPRI(trained_data, ad)
 		{
 			sum += (word_freq[j] * trained_data.row_probs[i][j]) / trained_data.col_probs[j];
 		}
-        //sum = Math.round(sum * 100000) / 100000; // Limit the sum to 5 decimal places.
+        sum = Math.round(sum * 100000) / 100000; // Limit the sum to 5 decimal places.
         // PRI(label, user{probe} interaction) = SUM_forall keywords([relative frequency(RF) of the words in the advert] * [RF of words in ads in training data associated with label] / [RF of words in all ads in training data])
 		pri.push(sum);
 	}
