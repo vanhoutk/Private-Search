@@ -319,7 +319,8 @@ function getColSums(count_matrix)
 		{
 			sum += count_matrix[j][i];
 		}
-        if (sum == 0) {sum = 1;} // avoid divide by zero
+        // TODO: I think this sum == 0 line can be removed, as there's no situation where col_sums is used for division.
+        if (sum == 0) {sum = 1;} // avoid divide by zero 
 		col_sums.push(sum);
 	}
 	return col_sums;
