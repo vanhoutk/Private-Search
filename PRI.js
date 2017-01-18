@@ -255,7 +255,7 @@ function createCountMatrix(labels, keywords, training_data) {
     for (var ad of training_data)
     {
         var label_index = labels.indexOf(ad[0])
-        keywords = ad[1].split(' ');
+        var ad_keywords = ad[1].split(' ');
 
         // Update the count matrix
         for (var keyword of ad_keywords) {
