@@ -178,13 +178,14 @@ function addLabel(trained_data, label)
 function addTrainingData(trained_data, ad_text, label) {
 
     // Add advert to training data
+    // TODO: This is not currently added to the training data.
     var ad_data = label + ':: ' + ad_text.join(' ') + ';';
 
     // Confirm that the label already exists
     var label_index = trained_data.labels.indexOf(label);
     if (label_index < 0) {
        // Unknown label
-       log('ERROR: addTrainingData() called with invalid label = '+label);
+       (debug > 0) && log('ERROR: addTrainingData() called with invalid label = '+label);
        return trained_data;      
     }
 
@@ -204,7 +205,7 @@ function addTrainingData(trained_data, ad_text, label) {
 
             // Update the count matrix with a new column for this keyword
             var j = trained_data.keywords.length - 1;
-            for (var i=0; i < trained_data.labels.length; i++)
+            for (var i = 0; i < trained_data.labels.length; i++)
             {
                 trained_data.count_matrix[i][j]=0;
             }
@@ -227,6 +228,7 @@ function addTrainingData(trained_data, ad_text, label) {
 
 /**
  * Creates a list of unique keywords appearing in the adverts. (training_data.js string)
+ * Note: buildDictionary returns the keywords in an ordered list
  * @param  {Array} training_data  Training data.
  * @return {Array}                List of keywords found in training data.
  */
@@ -252,11 +254,11 @@ function createCountMatrix(labels, keywords, training_data) {
     // Update count matrix using the training data
     for (var ad of training_data)
     {
-        var label_index = labels.indexOf(ad[0]);
+        var label_index = labels.indexOf(ad[0])
         keywords = ad[1].split(' ');
 
         // Update the count matrix
-        for (var keyword of keywords) {
+        for (var keyword of ad_keywords) {
           var keyword_index = keywords.indexOf(keyword);
           count_matrix[label_index][keyword_index]++;
         }
