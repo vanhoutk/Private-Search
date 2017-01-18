@@ -151,7 +151,7 @@ function addLabel(trained_data, label)
 {
     var label_index = trained_data.labels.indexOf(label);
     if (label_index >= 0) {
-       log('WARNING: addLabel() called with existing label = ' + label);
+       (debug > 0) && log('WARNING: addLabel() called with existing label = ' + label);
        return trained_data;      
     }
 
@@ -330,14 +330,14 @@ function getColSums(count_matrix)
 /**
  * Calculates the PRI estimator for the advert.
  * @param  {Array} ad         Advert text
- * @param  {Array} row_probs  Row probabilities (2d Array)
- * @param  {Array} col_probs  Column probabilities (2d Array)
+ * @param  {Array} row_probs  Row probabilities (2d array)
+ * @param  {Array} col_probs  Column probabilities 
  * @return {Array}            PRI estimator for all the labels.
  */
 function getPRI(trained_data, ad)
 {
 	// Get the frequency of the words in the advert appearing in the training data
-    // word_freq is a 2d array of [number of times a keyword from the ad appears in the keywords/number of times any keyword from the ad appears in the keywords]
+    // word_freq is an array of [number of times a keyword from the ad appears in the keywords/number of times any keyword from the ad appears in the keywords]
 	var word_freq = getWordFreq(trained_data.keywords, ad);
 
 	var pri = [];
@@ -352,6 +352,7 @@ function getPRI(trained_data, ad)
 		{
 			sum += (word_freq[j] * trained_data.row_probs[i][j]) / trained_data.col_probs[j];
 		}
+        //sum = Math.round(sum * 100000) / 100000; // Limit the sum to 5 decimal places.
         // PRI(label, user{probe} interaction) = SUM_forall keywords([relative frequency(RF) of the words in the advert] * [RF of words in ads in training data associated with label] / [RF of words in all ads in training data])
 		pri.push(sum);
 	}

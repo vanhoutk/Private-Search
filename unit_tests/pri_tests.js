@@ -1,4 +1,5 @@
 QUnit.test("PRI Tests", function(assert) {
+	
 	// | initMatrix()
 	var expected_matrix = [
   		[0, 0, 0, 0],
@@ -29,9 +30,10 @@ QUnit.test("PRI Tests", function(assert) {
 	];
 
 	var expected_row_sums_zeros = [1, 6, 2];
-	var expected_col_sums_zeros = [1, 3, 2, 3];
 	assert.deepEqual(getRowSums(count_matrix_with_zeros), expected_row_sums_zeros, "getRowSums() - zero condition");
-	assert.deepEqual(getColSums(count_matrix_with_zeros), expected_col_sums_zeros, "getColSums() - zero condition");
+	// Removed as there's no longer a conditional branch in getColSums()
+	//var expected_col_sums_zeros = [0, 3, 2, 3];
+	//assert.deepEqual(getColSums(count_matrix_with_zeros), expected_col_sums_zeros, "getColSums() - zero condition");
 
 
 	// | createEmptyMatrix()
@@ -43,7 +45,6 @@ QUnit.test("PRI Tests", function(assert) {
 
 	var empty_matrix = createEmptyMatrix(5, 4);
 	assert.deepEqual(empty_matrix, expected_empty_matrix, "createEmptyMatrix()");
-
 	
 
 	// | getProbs()
@@ -65,40 +66,56 @@ QUnit.test("PRI Tests", function(assert) {
 
 	// Testing with an zero-matrix to test all conditional branches
 
-	/*var expected_col_probs_zeros = [0.25, 0.25, 0.25, 0.25];
+	var expected_col_probs_zeros = [0, 0, 0, 0];
 	var expected_row_probs_zeros = [
 		[0, 0, 0, 0],
 		[0, 0, 0, 0],
 		[0, 0, 0, 0],
 	];
 	var expected_probs_zeros = [expected_row_probs_zeros, expected_col_probs_zeros];
-	assert.deepEqual(getProbs(zero_count_matrix, labels, keywords), expected_probs_zeros, "getProbs() - zero condition");*/
-
-	// Test the getPRI function
-	
-
-	// Test the buildDictionary function
-	var training_data = [
-		['label1', 'word1 word2 word3 word4 word5 word6 word2 word3 word4 word6'],
-		['label2', 'word3 word4 word5 word6 word7 word8']
-	]
-  var dictionary = buildDictionary(training_data);
-  var expected_dictionary = ['word1', 'word2', 'word3', 'word4', 'word5', 'word6', 'word7', 'word8']
-
-  assert.deepEqual(dictionary, expected_dictionary, "buildDictionary()");
-
-	// Test the addTrainingData function
+	assert.deepEqual(getProbs(zero_count_matrix, labels, keywords), expected_probs_zeros, "getProbs() - zero condition");
 
 
-	// Test the addLabel function
+	// | getPRI() - No conditional branches
+	var keywords_A_to_D = ["keyworda", "keywordb", "keywordc", "keywordd"];
+
 	var trained_data = {
 		'labels':labels, 
-		'keywords':keywords, 
+		'keywords':keywords_A_to_D, 
 		'count_matrix':count_matrix, 
 		'row_probs':expected_row_probs, 
 		'col_probs':expected_col_probs
 	};
 
+	var ad_text_array = ['keyworda', 'keyworda', 'keyworda', 'keywordb', 'key', 'word', 'name'];
+
+	var expected_pri = [
+		0.7, // Label1
+		1.5, // Label2
+		0.5  // Label3
+	];	
+
+	assert.deepEqual(getPRI(trained_data, ad_text_array), expected_pri, "getPRI()");
+
+
+
+
+	// | buildDictionary()
+	var training_data = [
+		['label1', 'word1 word2 word3 word4 word5 word6 word2 word3 word4 word6'],
+		['label2', 'word3 word4 word5 word6 word7 word8']
+	]
+	var dictionary = buildDictionary(training_data);
+	var expected_dictionary = ['word1', 'word2', 'word3', 'word4', 'word5', 'word6', 'word7', 'word8']
+
+	assert.deepEqual(dictionary, expected_dictionary, "buildDictionary()");
+
+
+	// | addTrainingData() - Three different conditional branches
+
+
+	// | addLabel()
+	// Testing with a new label and changed training data
 	var expected_count_matrix = [
   		[1, 2, 3, 4],
   		[2, 2, 2, 2],
@@ -107,20 +124,23 @@ QUnit.test("PRI Tests", function(assert) {
 	];
 
 	var expected_labels = ["label1", "label2", "label3", "label4"];
-
 	[expected_row_probs_2, expected_col_probs_2] = getProbs(expected_count_matrix, expected_labels, keywords);
 
 	var expected_trained_data = {
 		'labels':expected_labels, 
-		'keywords':keywords, 
+		'keywords':keywords_A_to_D, 
 		'count_matrix':expected_count_matrix, 
 		'row_probs':expected_row_probs_2, 
 		'col_probs':expected_col_probs_2
 	};
 
-	assert.deepEqual(addLabel(trained_data, "label4"), expected_trained_data, "addLabel()")
+	assert.deepEqual(addLabel(trained_data, "label4"), expected_trained_data, "addLabel() - new label");
 
-	// Test the splitTrainingData function
+	// Testing with an existing label
+	assert.deepEqual(addLabel(trained_data, "label1"), trained_data, "addLabel() - existing label");
+
+
+	// | splitTrainingData()
 
 	profile = 0;
 
@@ -135,6 +155,8 @@ QUnit.test("PRI Tests", function(assert) {
 	assert.deepEqual(splitTrainingData(training_data_string), expected_split_training_data, "splitTrainingData()");
 
 
-	// Test the training function
+	// | training() - Two conditional branches
+
+
 });
 
