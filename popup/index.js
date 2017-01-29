@@ -7,6 +7,7 @@ function log(msg) { console.log(msg); }
 // Draw a heatmap graph of the PRI history
 function draw_graph(pri_history)
 {
+    (debug > 0) && log("draw_graph():")
     var x = [], y = [], z = [];
     x = pri_history['gambling'].t; // Assume that all categories have same x-axis values (time values)
     for (var label in pri_history)
@@ -31,6 +32,17 @@ function draw_graph(pri_history)
     };
 
     Plotly.newPlot('plot', data, layout);
+}
+
+// Load history from local storage
+(debug > 0) && log("popup/index: Loading pri_history");
+var pri_history_str = localStorage.getItem("pri_history");
+
+var pri_history = [];
+if (pri_history_str)
+{
+    pri_history = JSON.parse(pri_history_str);
+    draw_graph(pri_history);
 }
 
 function new_category()
@@ -102,14 +114,3 @@ document.getElementById('export_button').onclick = export_pri_history;
         a.dispatchEvent(e)
     }
 })(console)
-
-// Load history from local storage
-(debug > 0) && log("popup/index: Loading pri_history");
-var pri_history_str = localStorage.getItem("pri_history");
-
-var pri_history = [];
-if (pri_history_str)
-{
-    pri_history = JSON.parse(pri_history_str);
-    draw_graph(pri_history);
-}

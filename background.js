@@ -79,13 +79,6 @@ function message_recv(message, sender, sendResponse)
             probe(trained_data);
             count = 0;
         }*/
-        (debug > 0) && log("message_recv(): search count: " + searchCount );
-
-        if (searchCount == 5){
-            (debug > 0) && log("Probing at sc: " + searchCount ); 
-            probe(trained_data);
-            searchCount = 0;
-        }
     }
     /*else if (message.subject == "make_probe")
     {
@@ -142,6 +135,12 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
             curr_url= changeInfo.url;  
             searchCount++;
             console.log ("sc: " + searchCount + " - " + changeInfo.url)  
+
+            if (searchCount >= 5){
+                (debug > 0) && log("Probing at sc: " + searchCount ); 
+                probe(trained_data);
+                searchCount = 0;
+            }
         }
     }  
     console.log("Tab: " + tabId +
