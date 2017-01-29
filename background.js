@@ -79,7 +79,8 @@ function message_recv(message, sender, sendResponse)
             probe(trained_data);
             count = 0;
         }*/
-        
+        (debug > 0) && log("message_recv(): search count: " + searchCount );
+
         if (searchCount == 5){
             (debug > 0) && log("Probing at sc: " + searchCount ); 
             probe(trained_data);
@@ -137,9 +138,10 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
     console.log ("sc: " + searchCount + " - " + changeInfo.url)  
     if (changeInfo.url.indexOf('google') != -1) {
         if (changeInfo.url != curr_url)  {
-            console.log("Tab: " + tabId + " URL changed to " + changeInfo.url);
+            //console.log("Tab: " + tabId + " URL changed to " + changeInfo.url);
             curr_url= changeInfo.url;  
             searchCount++;
+            console.log ("sc: " + searchCount + " - " + changeInfo.url)  
         }
     }  
     console.log("Tab: " + tabId +

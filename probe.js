@@ -42,21 +42,26 @@ function probe(trained_data)
                     //log(ads_words_joined);
                 }
 
-                pris[i] = getPRI(trained_data, ads_words_joined);
-                categories[i] = trained_data.labels[pris[i].indexOf(Math.max.apply(Math, pris[i]))];
+                pris = getPRI(trained_data, ads_words_joined);
+                //categories[i] = trained_data.labels[pris.indexOf(Math.max.apply(Math, pris))];
 
                 (debug > 0) && log(ads_words_joined);
-                (debug > 0) && log(categories);
+                //(debug > 0) && log(categories);
                 (debug > 0) && log(pris);
             }
 
             // Load the PRI history from local storage
-            (debug > 0) && log("probe(): Loading pri_history")
+            (debug > 0) && log("probe(): Loading pri_history");
 
             var pri_history_str = localStorage.getItem("pri_history");
+
+            (debug > 0) && log("probe(): pri_history " + pri_history_str);
+
             var pri_history = JSON.parse(pri_history_str);
           
             (debug > 0) && log("probe(): Updating pri_history with new data");
+
+            (debug > 0) && log("probe(): label.length " + trained_data.labels.length);
 
             // TODO: Add more logging here to see problem
 
