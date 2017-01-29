@@ -5,6 +5,9 @@
 */
 var debug = 1; // Controls the level of logging to console: 0 = No logging, 1 = Basic logging
 var profile = 0; // Change to 1 for performance timing info (Training)
+var curr_url = ""; // Current google url the user is on (in case they click a link and press back)
+var searchCount = 0; // Number of searches a user has done without a probe query being sent
+
 function log(msg){ console.log(msg); }
 
 // When we load the add-on, do the training
@@ -36,7 +39,7 @@ else
   pri_history = JSON.parse(pri_history_str);
 }
 
-probe(trained_data);
+//probe(trained_data);
 
 function onError(error)
 {
@@ -48,7 +51,7 @@ chrome.runtime.onMessage.addListener(message_recv);
 
 // General listening function, the script will receive several different kinds of messages. 
 // The subject needs to be checked in order to distinguish what the messages are for.
-var count = 0;
+//var count = 0;
 
 function message_recv(message, sender, sendResponse)
 {
@@ -69,12 +72,18 @@ function message_recv(message, sender, sendResponse)
         if (!sendResponse) {log('ERROR: message_recv() called without sendResponse');}
         sendResponse({subject: 'categories', categories: categories});
 
-        count += 1;
+        /*count += 1;
         if (count >= 2) // TODO: Need to update this logic to account for user searches correctly
         {
             // Make a probe every 5 user searches
             probe(trained_data);
             count = 0;
+        }*/
+        
+        if (searchCount == 5){
+            (debug > 0) && log("Probing at sc: " + searchCount ); 
+            probe(trained_data);
+            searchCount = 0;
         }
     }
     /*else if (message.subject == "make_probe")
@@ -122,6 +131,23 @@ function notify(message)
         "message": message.url
     });
 }
+
+function handleUpdated(tabId, changeInfo, tabInfo) {
+  if (changeInfo.url) {
+    console.log ("sc: " + searchCount + " - " + changeInfo.url)  
+    if (changeInfo.url.indexOf('google') != -1) {
+        if (changeInfo.url != curr_url)  {
+            console.log("Tab: " + tabId + " URL changed to " + changeInfo.url);
+            curr_url= changeInfo.url;  
+            searchCount++;
+        }
+    }  
+    console.log("Tab: " + tabId +
+                " URL changed to " + changeInfo.url);
+  }
+}
+
+chrome.tabs.onUpdated.addListener(handleUpdated);
 
 /*function sendMessageToTabs(tabs)
 {

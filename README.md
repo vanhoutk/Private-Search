@@ -38,3 +38,4 @@ Continuing to develop the code started by: [Cristiano](https://github.com/guimar
 - 6/12/16 - KVH - Tidy up and comment of code. Edit to foreground to prevent multiple instances of 'suggested category'.
 - 8/12/16 - KVH - Added functionality to export pri history
 - 11/12/16 - KVH - Changed the alarm to a polling function in the foreground.js so it only runs on google pages. Now works on Chrome and Firefox.
+- 18/01/17 - KVH - Finished creating unit tests for all PRI functions.

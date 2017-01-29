@@ -58,6 +58,8 @@ function probe(trained_data)
           
             (debug > 0) && log("probe(): Updating pri_history with new data");
 
+            // TODO: Add more logging here to see problem
+
             var t = Date.now();
 
             for (var i = 0; i < trained_data.labels.length; i++) {
