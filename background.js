@@ -28,7 +28,7 @@ if (init_history || pri_history_str == null)
     var pri_history = {};
     for (var i = 0; i < trained_data.labels.length; i++)
     {
-        pri_history[trained_data.labels[i]] = {t:[], pri:[]};
+        pri_history[trained_data.labels[i]] = {t:[], probe:[], pri:[]};
     }
     localStorage.setItem('pri_history', JSON.stringify(pri_history));
 }

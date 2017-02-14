@@ -1,3 +1,5 @@
+var probe_count = 0;
+
 function probe(trained_data)
 {
     var xmlHttp = new XMLHttpRequest();
@@ -69,8 +71,14 @@ function probe(trained_data)
 
             for (var i = 0; i < trained_data.labels.length; i++) {
                 pri_history[trained_data.labels[i]].t.push(t);
-                pri_history[trained_data.labels[i]].pri.push(pris[i]);
+                pri_history[trained_data.labels[i]].probe.push(probe_count);
+                if(ads.length > 0)
+                    pri_history[trained_data.labels[i]].pri.push(pris[i]);
+                else
+                    pri_history[trained_data.labels[i]].pri.push(pri_history[trained_data.labels[i]].pri[pri_history[trained_data.labels[i]].pri.length - 1]);
             }
+
+            probe_count++;
 
             (debug > 0) && log(pri_history);
             (debug > 0) && log("saving pri_history");
