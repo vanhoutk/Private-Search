@@ -71,6 +71,14 @@ function export_pri_history()
 
     console.save(current_pri_history, file_name);
 
+    // Export ad history
+    //var current_ad_history = localStorage.getItem("ad_history");
+    //var file_name_2 = "Ad_history_at_" + current_time.toString() + ".json";
+
+    //log("export_pri_history(): " + current_ad_history);
+
+    //console.save(current_ad_history, file_name_2);
+
     //window.location = "data:text/json, " + current_pri_history; 
 
     /*chrome.downloads.download({

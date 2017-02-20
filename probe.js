@@ -26,12 +26,18 @@ function probe(trained_data)
 
             (debug > 0) && log ('probe(): Number of ads on probe page: ' + ads.length);
 
+            // Outputting ad data
+            //var ad_words_history_str = localStorage.getItem('ad_history');
+            //var ad_words_history = JSON.parse(ad_words_history_str);
+
+            var ads_words_joined = [];
+
             if (ads.length > 0)
             {
                 // Process the ads and return an array of arrays of the words in the ad with stop words removed and the remaining words stemmed.
                 var ads_words = processAds(ads);
                 var pris = [], categories=[];
-                var ads_words_joined = [];
+                //var ads_words_joined = [];
 
                 // Join all of the individual ad arrays to form a single array of the words in the ads on the page
                 for(var i = 0; i < ads_words.length; i++)
@@ -44,6 +50,8 @@ function probe(trained_data)
                     //log(ads_words_joined);
                 }
 
+                
+
                 pris = getPRI(trained_data, ads_words_joined);
                 //categories[i] = trained_data.labels[pris.indexOf(Math.max.apply(Math, pris))];
 
@@ -51,6 +59,8 @@ function probe(trained_data)
                 //(debug > 0) && log(categories);
                 (debug > 0) && log(pris);
             }
+
+            //localStorage.setItem('ad_history', JSON.stringify(ad_words_history));
 
             // Load the PRI history from local storage
             (debug > 0) && log("probe(): Loading pri_history");
@@ -72,6 +82,7 @@ function probe(trained_data)
             for (var i = 0; i < trained_data.labels.length; i++) {
                 pri_history[trained_data.labels[i]].t.push(t);
                 pri_history[trained_data.labels[i]].probe.push(probe_count);
+                pri_history[trained_data.labels[i]].ads.push(ads_words_joined);
                 if(ads.length > 0)
                     pri_history[trained_data.labels[i]].pri.push(pris[i]);
                 else

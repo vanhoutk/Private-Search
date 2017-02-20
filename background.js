@@ -28,7 +28,7 @@ if (init_history || pri_history_str == null)
     var pri_history = {};
     for (var i = 0; i < trained_data.labels.length; i++)
     {
-        pri_history[trained_data.labels[i]] = {t:[], probe:[], pri:[]};
+        pri_history[trained_data.labels[i]] = {t:[], probe:[], ads:[], pri:[]};
     }
     localStorage.setItem('pri_history', JSON.stringify(pri_history));
 }
@@ -38,6 +38,14 @@ else
   (debug > 0) && log("background: Reloading pri_history");
   pri_history = JSON.parse(pri_history_str);
 }
+
+// Ad History Initalisation
+//var ad_history_str = localStorage.getItem("ad_history");
+//if(ad_history_str == null)
+//{
+//    var ad_history = {};
+//    localStorage.setItem('ad_history', JSON.stringify(ad_history));
+//}
 
 //probe(trained_data);
 
