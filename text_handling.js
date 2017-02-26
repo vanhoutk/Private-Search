@@ -55,11 +55,57 @@ function getWordFreq(keywords, ad) {
 			words_in_keywords++;
 		}
 	}
+
 	// Divide word counts by total number of words in the advert and training data
 	word_freq = word_freq.map(function(x) {
-		return x / words_in_keywords;
+		  return x / words_in_keywords;
 	});
-	return word_freq;
+
+  return word_freq;
+}
+
+function getWordFreqPRIPlus(keywords, ad, lambda)
+{
+  var keywords_length = keywords.length;
+  var ad_length = ad.length;
+
+  // Create array of frequencies and initialize it with 0s
+  var word_freq = new Array(keywords_length).fill(0);
+
+  // Verify if word from advert is in the list of keywords;
+  // If it is, increase its count in the frequency array
+  for (var i = 0; i < ad_length; i++) {
+    var index = keywords.indexOf(ad[i]);
+    if (index != -1) {
+      word_freq[index]++;
+    }
+  }
+
+  word_freq = word_freq.map(function(x) {
+    return lambda + (1 - lambda) * x;
+  });
+
+  var words_in_keywords = 0;
+
+  for (var j = 0; j < word_freq.length; j++)
+  {
+    words_in_keywords += word_freq[j];
+  }
+
+  if(words_in_keywords == 0)
+  {
+    var word_freq_ones = new Array(keywords_length).fill(0);
+    return word_freq_ones;
+  }
+  else
+  {
+    // Divide word counts by total number of words in the advert and training data
+    word_freq = word_freq.map(function(x) {
+        return x / words_in_keywords;
+    });
+
+    return word_freq;
+  }
 }
 
 /**

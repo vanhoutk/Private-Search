@@ -7,6 +7,7 @@ var debug = 1; // Controls the level of logging to console: 0 = No logging, 1 = 
 var profile = 0; // Change to 1 for performance timing info (Training)
 var curr_url = ""; // Current google url the user is on (in case they click a link and press back)
 var searchCount = 0; // Number of searches a user has done without a probe query being sent
+var usePRIPlus = 1; // Use PRI if 0, PRI+ if 1
 
 function log(msg){ console.log(msg); }
 

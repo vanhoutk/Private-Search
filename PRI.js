@@ -71,14 +71,25 @@ function training(first_training = true)
     var t1 = performance.now();
     profile && log("createCountMatrix took " + (t1 - t0) + " milliseconds.")
 
-    // Calculate row and column frequencies
-    var [row_probs, col_probs] = getProbs(count_matrix,labels,keywords);
+    // Calculate Lambda
+    var lambda = 0.01;
+
+    if(usePRIPlus == 0)
+    {
+        // Calculate row and column frequencies
+        var [row_probs, col_probs] = getProbs(count_matrix,labels,keywords);
+    }
+    else
+    {
+        // Calculate row and column frequencies
+        var [row_probs, col_probs] = getProbsPRIPlus(count_matrix,labels,keywords, lambda);
+    }
 
     var t0 = performance.now();
     profile && log("getProbs took " + (t0 - t1) + " milliseconds.")
-  
+
     // Save training variables to local storage
-    var trained_data = {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs};
+    var trained_data = {'labels':labels, 'keywords':keywords, 'count_matrix':count_matrix, 'row_probs':row_probs, 'col_probs':col_probs, 'lambda': lambda};
     saveTrainedData(trained_data);
 
     var t1 = performance.now();
@@ -140,6 +151,7 @@ function saveTrainedData(trained_data) {
     localStorage.setItem("count_matrix", serializeMatrix(trained_data.count_matrix));
     localStorage.setItem("row_probs", serializeArray(trained_data.row_probs));
     localStorage.setItem("col_probs", serializeArray(trained_data.col_probs));
+    localStorage.setItem("lambda", trained_data.lambda);
 }
 
 /**
@@ -242,6 +254,50 @@ function buildDictionary(training_data)
 }
 
 /**
+ * Placeholder function for calculating lambda dynamically
+ * TODO: Fix once error in paper is determind
+ */
+function calculateLambda(count_matrix, labels, keywords)
+{
+    var lambda = 0;
+    var minSquareErrorLoss = 100; // Arbitrary large initial value
+
+    for(var l = 0; l < 1; l += 0.01)
+    {
+        var squareErrorLoss = 0;
+        for(var i = 0; i < labels.length; i++)
+        {
+            var errorLoss = (1 / labels.length) - probLambda(count_matrix, l, i, labels, keywords);
+            squareErrorLoss += errorLoss * errorLoss;
+        }
+
+        if (squareErrorLoss < minSquareErrorLoss)
+        {
+            lambda = l;
+            minSquareErrorLoss = squareErrorLoss;
+        }
+    }
+
+    return lambda;
+}
+
+function probLambda(count_matrix, lambda, i, labels, keywords)
+{
+    var total_count = 0;
+    var sum = 0;
+    for(var k = 0; k < keywords.length; k++)
+    {
+        sum += lambda + ((1 - lambda) * count_matrix[i][k]);
+        for(var j = 0; j < labels.length; j++)
+        {
+            total_count += lambda + ((1 - lambda) * count_matrix[j][k]);
+        }
+    }
+
+    return sum/total_count;
+}
+
+/**
  * Creates a count matrix using the training data with (number of labels rows x number of keywords columns)
  * @param  {Array} labels    List of advert labels.
  * @param  {Array} ad_texts  Training data.
@@ -328,7 +384,50 @@ function getColSums(count_matrix)
 	return col_sums;
 }
 
-// TODO: Change this to PRI+
+/**
+ * Gets the sums of the rows of the count matrix. (Sums up all of the values in each column of the row, i.e. total keywords for that label)
+ * @return {Array}  Row sums.
+ */
+function getRowSumsPRIPlus(count_matrix, lambda)
+{
+    var row_sums = [], sum;
+    var n_rows = count_matrix.length; //labels.length,
+    var n_cols = count_matrix[0].length; //keywords.length;
+    for (var i = 0; i < n_rows; i++)
+    {
+        sum = 0;
+        for (var j = 0; j < n_cols; j++) {
+            sum += lambda + (1 - lambda) * count_matrix[i][j];
+        }
+        if (sum == 0) {sum = 1;} // avoid divide by zero
+        row_sums.push(sum);
+    }
+    return row_sums;
+}
+
+/**
+ * Gets the sums of the columns of the count matrix. (Sums up all of the values in each row of a column, i.e. the total time a keyword appears across all labels)
+ * @return {Array}  Column sums.
+ */
+function getColSumsPRIPlus(count_matrix, lambda)
+{
+    var col_sums = [], sum;
+    var n_rows = count_matrix.length; //labels.length,
+    var n_cols = count_matrix[0].length; //keywords.length;
+    for (var i = 0; i < n_cols; i++)
+    {
+        sum = 0;
+        for (var j = 0; j < n_rows; j++)
+        {
+            sum += lambda + (1 - lambda) * count_matrix[j][i];
+        }
+        // TODO: I think this sum == 0 line can be removed, as there's no situation where col_sums is used for division.
+        // if (sum == 0) {sum = 1;} // avoid divide by zero 
+        col_sums.push(Math.round(sum * 1000000) / 1000000); //Limit sums to six decimal places for unit-testing
+    }
+    return col_sums;
+}
+
 /**
  * Calculates the PRI estimator for the advert.
  * @param  {Array} ad         Advert text
@@ -363,6 +462,42 @@ function getPRI(trained_data, ad)
 	(debug > 2) && log(pri);
 
 	return pri;
+}
+
+/**
+ * Calculates the PRI+ estimator for the advert.
+ * @param  {Array} ad         Advert text
+ * @param  {Array} row_probs  Row probabilities (2d array)
+ * @param  {Array} col_probs  Column probabilities 
+ * @return {Array}            PRI+ estimator for all the labels.
+ */
+function getPRIPlus(trained_data, ad)
+{
+    // Get the frequency of the words in the advert appearing in the training data
+    // word_freq is an array of [number of times a keyword from the ad appears in the keywords/number of times any keyword from the ad appears in the keywords]
+    var word_freq = getWordFreqPRIPlus(trained_data.keywords, ad, trained_data.lambda);
+
+    var pri = [];
+
+    var labels_length = trained_data.labels.length;
+    var words_length = word_freq.length; // Word_freq.length = trained_data.keywords.length
+    // Calculate the PRI for each label
+    for (var i = 0; i < labels_length; i++)
+    {
+        var sum = 0;
+        for (var j = 0; j < words_length; j++)
+        {
+            sum += (word_freq[j] * trained_data.row_probs[i][j]) / trained_data.col_probs[j];
+        }
+        sum = Math.round(sum * 100000) / 100000; // Limit the sum to 5 decimal places
+        // PRI(label, user{probe} interaction) = SUM_forall keywords([relative frequency(RF) of the words in the advert] * [RF of words in ads in training data associated with label] / [RF of words in all ads in training data])
+        pri.push(sum);
+    }
+
+    (debug > 2) && log("getPRI(): PRI = ");
+    (debug > 2) && log(pri);
+
+    return pri;
 }
 
 function getProbs(count_matrix, labels, keywords)
@@ -405,6 +540,47 @@ function getProbs(count_matrix, labels, keywords)
 	}
 
 	return [row_probs, col_probs];
+}
+
+function getProbsPRIPlus(count_matrix, labels, keywords, lambda)
+{
+    var row_sums = getRowSumsPRIPlus(count_matrix, lambda);
+    var col_sums = getColSumsPRIPlus(count_matrix, lambda);
+
+    (debug > 2) && log('getProbs(): Row sums = ' + row_sums);
+    (debug > 2) && log('getProbs(): Column sums = ' + col_sums);
+
+    var labels_length = labels.length, keywords_length = keywords.length;
+
+    /* --- Row probabilities --- */
+    // Create a data structure similar to the count matrix
+    var row_probs = createEmptyMatrix(labels_length, keywords_length);
+    // Divide the rows of the count matrix by row sums
+    for (var i = 0; i < labels_length; i++)
+    {
+        for (var j = 0; j < keywords_length; j++)
+        {
+            row_probs[i][j] = Math.round(((lambda + (1 - lambda) * count_matrix[i][j]) / row_sums[i]) * 100000)/100000;
+        }
+    }
+
+    /* --- Column probabilities --- */
+    var col_probs = [];
+    // Calculate total sum
+    var total_sum = 0;
+    for (var i = 0; i < keywords_length; i++)
+    {
+        total_sum += col_sums[i];
+    }
+
+    if (total_sum == 0) {total_sum = 1;} // Avoid divide by 0
+    // Divide column sums by total sum
+    for (var i = 0; i < keywords_length; i++)
+    {
+        col_probs.push(col_sums[i] / total_sum);
+    }
+
+    return [row_probs, col_probs];
 }
 
 /**

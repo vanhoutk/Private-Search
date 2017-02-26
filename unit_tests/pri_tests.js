@@ -281,6 +281,8 @@ QUnit.test("PRI Tests", function(assert) {
 	training_data_str = 'label1:: wordA wordB wordC wordD wordE wordF wordB wordC wordD wordF;'
 	+ 'label2:: wordC wordD wordE wordF wordG wordH;';
 
+	usePRIPlus = 0;
+
 	var training_labels = ['label1', 'label2'];
 	var training_keywords = ['word', 'worda', 'wordb', 'wordc', 'wordd', 'wordf', 'wordg', 'wordh'];
 
@@ -293,14 +295,99 @@ QUnit.test("PRI Tests", function(assert) {
 
 	[training_row_probs, training_col_probs] = getProbs(training_count_matrix, training_labels, training_keywords);
 
+	var training_lambda = 0.01;
+
 	var training_expected = {
 		'labels': training_labels, 
 		'keywords': training_keywords, 
 		'count_matrix': training_count_matrix, 
 		'row_probs': training_row_probs, 
-		'col_probs': training_col_probs
+		'col_probs': training_col_probs,
+		'lambda': training_lambda
 	};
 
 	assert.deepEqual(training(), training_expected, "training()");
+
+	// | probLambda()
+	var probLambda_count_matrix = [
+		[1,4,3],
+		[4,2,3],
+		[5,1,2],
+	]; 
+
+	var probLambda_labels = ['label1', 'label2', 'label3'];
+	var probLambda_keywords = ['keyworda', 'keywordb', 'keywordc'];
+
+	var i = 0;
+	var lambda = 0.01;
+
+	var expected_prob = 0.320048;
+
+	assert.deepEqual(Math.round(probLambda(probLambda_count_matrix, lambda, i, probLambda_labels, probLambda_keywords) * 1000000) / 1000000, expected_prob, "probLambda()");
+
+	// | calculateLambda()
+	var calculateLambda_count_matrix = [
+		[1,4,3],
+		[4,2,3],
+		[5,1,2]
+	]; 
+
+	var calculateLambda_labels = ['label1', 'label2', 'label3'];
+	var calculateLambda_keywords = ['keyworda', 'keywordb', 'keywordc'];
+
+	var calculateLambda_expected = 0.99;
+
+	assert.deepEqual(Math.round(calculateLambda(calculateLambda_count_matrix, calculateLambda_labels, calculateLambda_keywords) * 100) / 100, calculateLambda_expected, "calculateLambda()");
+
+	// | getRowSumsPRIPlus() & getColSumsPRIPlus()
+	// Testing with a filled matrix
+	var getSumsPRIPlus_count_matrix = [
+  		[1, 2, 3, 4],
+  		[2, 2, 2, 2],
+  		[0, 1, 0, 1]
+	];
+
+	//[1,1.99, 2.98, 3.97]
+	//[1.99, 1.99, 1.99, 1.99]
+	//[0.01, 1, 0.01, 1]
+	var getSumsPRIPlus_lambda = 0.01;
+	var getRowSumsPRIPlus_expected = [9.94, 7.96, 2.02];
+	var getColSumsPRIPlus_expected = [3, 4.98, 4.98, 6.96];
+
+	assert.deepEqual(getRowSumsPRIPlus(getSums_count_matrix, getSumsPRIPlus_lambda), getRowSumsPRIPlus_expected, "getRowSumsPRIPlus()");
+	assert.deepEqual(getColSumsPRIPlus(getSums_count_matrix, getSumsPRIPlus_lambda), getColSumsPRIPlus_expected, "getColSumsPRIPlus()");
+
+	// | getProbsPRIPlus()
+	debug = 0; // Needs to be assigned here as the background.js is not included in the html
+
+	var getProbsPRIPlus_count_matrix = [
+  		[1, 2, 3, 4],
+  		[2, 2, 2, 2],
+  		[0, 1, 0, 1]
+	];
+
+	var getProbsPRIPlus_row_probs_expected = [
+		[Math.round((1/9.94) * 100000)/100000, Math.round((1.99/9.94) * 100000)/100000, Math.round((2.98/9.94) * 100000)/100000, Math.round((3.97/9.94) * 100000)/100000],
+		[0.25, 0.25, 0.25, 0.25],
+		[Math.round((0.01/2.02) * 100000)/100000, Math.round((1/2.02) * 100000)/100000, Math.round((0.01/2.02) * 100000)/100000, Math.round((1/2.02) * 100000)/100000]
+	];
+
+	var getProbsPRIPlus_col_probs_expected = [3/19.92, 4.98/19.92, 4.98/19.92, 6.96/19.92];
+	var getProbsPRIPlus_expected = [getProbsPRIPlus_row_probs_expected, getProbsPRIPlus_col_probs_expected];
+	var getProbsPRIPlus_labels = ["label1", "label2", "label3"];
+	var getProbsPRIPlus_keywords = ["keyword1", "keyword2", "keyword3", "keyword4"];
+	var getProbsPRIPlus_lambda = 0.01;
+	assert.deepEqual(getProbsPRIPlus(getProbsPRIPlus_count_matrix, getProbsPRIPlus_labels, getProbsPRIPlus_keywords, getProbsPRIPlus_lambda), getProbsPRIPlus_expected, "getProbs()");
+
+	// Testing with a zero-matrix to test all conditional branches
+
+	//var getProbs_col_probs_expected_zeros = [0, 0, 0, 0];
+	//var getProbs_row_probs_expected_zeros = [
+	//	[0, 0, 0, 0],
+	//	[0, 0, 0, 0],
+	//	[0, 0, 0, 0],
+	//];
+	//var getProbs_expected_zeros = [getProbs_row_probs_expected_zeros, getProbs_col_probs_expected_zeros];
+	//assert.deepEqual(getProbs(initMatrix(3, 4), getProbs_labels, getProbs_keywords), getProbs_expected_zeros, "getProbs() - zero condition");
 });
 
