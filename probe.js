@@ -1,4 +1,4 @@
-var probe_count = 0;
+var probe_count = 1;
 
 function probe(trained_data)
 {
@@ -32,7 +32,7 @@ function probe(trained_data)
 
             var ads_words_joined = [];
 
-            if (ads.length > 0)
+            if (ads.length > 0 || usePRIPlus == 1)
             {
                 // Process the ads and return an array of arrays of the words in the ad with stop words removed and the remaining words stemmed.
                 var ads_words = processAds(ads);
@@ -51,8 +51,10 @@ function probe(trained_data)
                 }
 
                 
-
-                pris = getPRI(trained_data, ads_words_joined);
+                if(usePRIPlus == 1)
+                  pris = getPRIPlus(trained_data, ads_words_joined);
+                else
+                  pris = getPRI(trained_data, ads_words_joined);
                 //categories[i] = trained_data.labels[pris.indexOf(Math.max.apply(Math, pris))];
 
                 (debug > 0) && log(ads_words_joined);
@@ -83,9 +85,9 @@ function probe(trained_data)
                 pri_history[trained_data.labels[i]].t.push(t);
                 pri_history[trained_data.labels[i]].probe.push(probe_count);
                 pri_history[trained_data.labels[i]].ads.push(ads_words_joined);
-                if(ads.length > 0)
+                if(ads.length > 0 || usePRIPlus == 1)
                     pri_history[trained_data.labels[i]].pri.push(pris[i]);
-                else
+                else // Copy the PRI values from the previous probe
                     pri_history[trained_data.labels[i]].pri.push(pri_history[trained_data.labels[i]].pri[pri_history[trained_data.labels[i]].pri.length - 1]);
             }
 

@@ -27,9 +27,11 @@ if (init_history || pri_history_str == null)
     // Initialise history
     (debug > 0) && log("background: Initialising pri_history");
     var pri_history = {};
+    var time_now = Date.now();
     for (var i = 0; i < trained_data.labels.length; i++)
     {
-        pri_history[trained_data.labels[i]] = {t:[], probe:[], ads:[], pri:[]};
+        // TODO: Normalise PRIs when using normalised PRI+
+        pri_history[trained_data.labels[i]] = {t:[time_now], probe:[0], ads:[[]], pri:[1]};
     }
     localStorage.setItem('pri_history', JSON.stringify(pri_history));
 }
