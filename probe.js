@@ -4,7 +4,8 @@ function probe(trained_data)
 {
     var xmlHttp = new XMLHttpRequest();
     //xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=causes+and+symptoms");
-    xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=help+and+advice");
+    //xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=help+and+advice");
+    xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=medical+advice");
     //xmlHttp.open( "GET", "http://www.google.com/search?hl=en&q=poker");
     xmlHttp.withCredentials = true;
     xmlHttp.send();

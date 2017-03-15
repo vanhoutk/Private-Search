@@ -7,7 +7,12 @@ var debug = 1; // Controls the level of logging to console: 0 = No logging, 1 = 
 var profile = 0; // Change to 1 for performance timing info (Training)
 var curr_url = ""; // Current google url the user is on (in case they click a link and press back)
 var searchCount = 0; // Number of searches a user has done without a probe query being sent
+var proxyCount = 0; // Number of proxy searches done without a probe query being sent
 var usePRIPlus = 1; // Use PRI if 0, PRI+ if 1
+
+var useProxyInjection = true;
+var myWorker;
+var workerStatus = false; //
 
 function log(msg){ console.log(msg); }
 
@@ -37,9 +42,9 @@ if (init_history || pri_history_str == null)
 }
 else
 {
-  // Load from local storage
-  (debug > 0) && log("background: Reloading pri_history");
-  pri_history = JSON.parse(pri_history_str);
+    // Load from local storage
+    (debug > 0) && log("background: Reloading pri_history");
+    pri_history = JSON.parse(pri_history_str);
 }
 
 // Ad History Initalisation
@@ -56,6 +61,49 @@ function onError(error)
 {
     log(`Error: ${error}`);
 }
+
+// Proxy Topic Worker Functions
+function PauseWorker()
+{  
+    if (workerStatus && window.SharedWorker) // TODO: Should this be Worker?
+    {
+        (debug > 0) && log("PauseWorker()");
+        myWorker.postMessage("P");
+        workerStatus = false;
+    }
+}
+
+function loadWorker()
+{
+    if (useProxyInjection && !!window.Worker) 
+    {
+        (debug > 0) && log("loadWorker(): Passed the initial if statement");
+
+        myWorker = new Worker("worker.js");
+        //myWorker.postMessage(1)
+    
+        myWorker.onmessage = function(e) 
+        {
+            proxyCount++ ;
+            (debug > 0) && log("loadWorker(): Proxy " +  e.data + " - " + proxyCount);
+            if (searchCount >= 1 && (searchCount + proxyCount) > 4)
+            {
+                (debug > 0) && log("loadWorker(): Probing at search count " + searchCount ); 
+                probe(trained_data);
+                searchCount = 0;
+                proxyCount = 0;
+            }
+            if (proxyCount > 8)
+            {  
+                (debug > 0) && log("loadWorker(): Pausing Worker")
+                // When no user activity  pause the worker.
+                PauseWorker();
+            }
+        };
+    }
+}
+
+//loadWorker();
 
 // Add a listener to received messages from foreground web pages i.e. user pages
 chrome.runtime.onMessage.addListener(message_recv);
@@ -137,26 +185,40 @@ function notify(message)
     });
 }
 
-function handleUpdated(tabId, changeInfo, tabInfo) {
-  if (changeInfo.url) {
-    console.log ("sc: " + searchCount + " - " + changeInfo.url)  
-    if (changeInfo.url.indexOf('google') != -1) {
-        if (changeInfo.url != curr_url)  {
-            //console.log("Tab: " + tabId + " URL changed to " + changeInfo.url);
-            curr_url= changeInfo.url;  
-            searchCount++;
-            console.log ("sc: " + searchCount + " - " + changeInfo.url)  
+function handleUpdated(tabId, changeInfo, tabInfo) 
+{
+    if (changeInfo.url) 
+    {
+        (debug > 0) && log("handleUpdated(): Search Count " + searchCount + " - " + changeInfo.url)  
+        if (changeInfo.url.indexOf('google') != -1) 
+        {
+            if (useProxyInjection && !!window.Worker) {
+                loadWorker();
+                workerStatus = true;
+                myWorker.postMessage("L");
+            }
 
-            if (searchCount >= 5){
-                (debug > 0) && log("Probing at sc: " + searchCount ); 
-                probe(trained_data);
-                searchCount = 0;
+
+            if (changeInfo.url != curr_url)  
+            {
+                curr_url= changeInfo.url;  
+                searchCount++;
+
+                if (searchCount >= 1 && (searchCount + proxyCount) > 4)
+                {
+                    (debug > 0) && log("handleUpdated(): Probing at sc: " + searchCount ); 
+                    probe(trained_data);
+                    searchCount = 0;
+                    proxyCount = 0;
+                }
             }
         }
-    }  
-    console.log("Tab: " + tabId +
-                " URL changed to " + changeInfo.url);
-  }
+        else
+        {
+            (useProxyInjection == true) && PauseWorker();
+        }
+        (debug > 0) && log("handleUpdated(): Tab: " + tabId + " URL changed to " + changeInfo.url);
+    }
 }
 
 chrome.tabs.onUpdated.addListener(handleUpdated);
