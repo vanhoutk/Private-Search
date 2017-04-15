@@ -156,8 +156,8 @@ function removeStopWords(str) {
 
 /**
  * Stems the words from the text.
- * @param  {Array} ads  Array containing the adverts.
- * @return {Array}      Each element of the array is an array containing the stemmed words from each advert.
+ * @param  {String} text String with stop words removed
+ * @return {String}      String with words stemmed
  */
 function stemWords(text) {
     return text.split(' ').map(stemmer).join(' ');

@@ -49,7 +49,3 @@ function getAdText(ad) {
     }
     return text;
 }
-
-
-
-

@@ -39,9 +39,22 @@ QUnit.test("Text Handling Tests", function(assert) {
 	assert.deepEqual(getWordFreqPRIPlus(getWordFreqPRIPlus_keywords, getWordFreqPRIPlus_ad, getWordFreqPRIPlus_lambda), getWordFreqPRIPlus_expected, "getWordFreqPRIPlus()");
 
 	// | tokeniseText()
+	var tokeniseText_string = "This is a test string to see which words are removed in the function to remove stop words";
+	var tokeniseText_expected = ["test", "string", "word", "remov", "function", "remov", "stop", "word"];
+
+	assert.deepEqual(tokeniseText(tokeniseText_string), tokeniseText_expected, "tokeniseText()");
 
 	// | removeStopWords()
+	var removeStopWords_string = "This is a test string to see which words are removed in the function to remove stop words";
+	var removeStopWords_expected = "test string words removed function remove stop words";
+
+	assert.deepEqual(removeStopWords(removeStopWords_string), removeStopWords_expected, "removeStopWords()");
 
 	// | stemWords()
+	// Note: Could test all expected stem cases, but the following were deemed an adequate sample 
+	var stemWords_string = "test string words removed function remove stop words";
+	var stemWords_expected = "test string word remov function remov stop word";
+
+	assert.deepEqual(stemWords(stemWords_string), stemWords_expected, "stemWords()");
 
 });

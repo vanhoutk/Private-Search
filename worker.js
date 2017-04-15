@@ -8,13 +8,24 @@ var debug = 1;
 
 function log(msg){ console.log(msg); }
 
+/**
+ * Splits the proxy query string into an array of queries
+ * @param   {String} proxy_queries  String of proxy queries
+ * @return  {Array}                 Array of proxy queries
+ */
 function getproxyQ(proxy_queries)
 {
     (debug > 0) && log("getproxyQ()");
     var split_Qlist = proxy_queries.split(';');
     return split_Qlist;
 }
-        
+
+/**
+ * Returns a random integer between min and max inclusive
+ * @param   {Int} min   Minimum integer
+ * @param   {Int} max   Maximum integer
+ * @return  {Int}       Random integer
+ */
 function getRandomInt(min, max) 
 {
     (debug > 0) && log("getRandomInt()");
@@ -30,7 +41,7 @@ function runquery()
         var output = httpRequest.responseText;
         if (output) 
         {
-          postMessage("L");
+            postMessage("L");
         }
         httpRequest = null;
     }
@@ -38,7 +49,7 @@ function runquery()
     var httpRequest  = new XMLHttpRequest();
     var query = "http://www.google.com/search?hl=en&q=" + proxyQlist[getRandomInt(0,proxyQCount)];
     httpRequest.open( "GET", query);
-    httpRequest.onload=infoReceived;
+    httpRequest.onload = infoReceived;
     httpRequest.withCredentials = true;
     httpRequest.send();
     //postMessage("F");
@@ -71,7 +82,3 @@ onmessage = function(event)
         //runquery();     
     }
 }
-
-
-
-
