@@ -10,7 +10,7 @@ var searchCount = 0; // Number of searches a user has done without a probe query
 var proxyCount = 0; // Number of proxy searches done without a probe query being sent
 var usePRIPlus = 1; // Use PRI if 0, PRI+ if 1
 
-var useProxyInjection = true;
+var useProxyInjection = false;
 var myWorker;
 var workerStatus = false; //
 

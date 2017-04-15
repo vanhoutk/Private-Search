@@ -31,7 +31,7 @@ function serializeArray(arr) {
  * @param  {String} matrix_str String representing the matrix.
  * @return {Array}             2d Array representing the matrix.
  */
-function deserializeMatrix(matrix_str) {
+function deserializeIntMatrix(matrix_str) {
 	// Isolate the rows of the matrix
 	var rows = matrix_str.split(';');
 	var n_rows = rows.length;

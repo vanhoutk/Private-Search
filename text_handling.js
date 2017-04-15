@@ -56,10 +56,13 @@ function getWordFreq(keywords, ad) {
 		}
 	}
 
-	// Divide word counts by total number of words in the advert and training data
-	word_freq = word_freq.map(function(x) {
-		  return x / words_in_keywords;
-	});
+  if(words_in_keywords > 0)
+  {
+  	// Divide word counts by total number of words in the advert and training data
+  	word_freq = word_freq.map(function(x) {
+  		  return x / words_in_keywords;
+  	});
+  }
 
   return word_freq;
 }
@@ -81,10 +84,6 @@ function getWordFreqPRIPlus(keywords, ad, lambda)
     }
   }
 
-  word_freq = word_freq.map(function(x) {
-    return lambda + (1 - lambda) * x;
-  });
-
   var words_in_keywords = 0;
 
   for (var j = 0; j < word_freq.length; j++)
@@ -92,16 +91,28 @@ function getWordFreqPRIPlus(keywords, ad, lambda)
     words_in_keywords += word_freq[j];
   }
 
+  word_freq = word_freq.map(function(x) {
+    return lambda + (1 - lambda) * x;
+  });
+
+  // If none of the words in the ad are in the keywords, return an array filled with ones
   if(words_in_keywords == 0)
   {
-    var word_freq_ones = new Array(keywords_length).fill(0);
+    var word_freq_ones = new Array(keywords_length).fill(1);
     return word_freq_ones;
   }
-  else
+  else // Else calculate the sum of the values in the array and divided each value by this sum
   {
+    words_in_keywords = 0;
+
+    for (var j = 0; j < word_freq.length; j++)
+    {
+      words_in_keywords += word_freq[j];
+    }
+
     // Divide word counts by total number of words in the advert and training data
     word_freq = word_freq.map(function(x) {
-        return x / words_in_keywords;
+        return (Math.round((x / words_in_keywords) * 1000000) / 1000000);
     });
 
     return word_freq;

@@ -389,5 +389,11 @@ QUnit.test("PRI Tests", function(assert) {
 	//];
 	//var getProbs_expected_zeros = [getProbs_row_probs_expected_zeros, getProbs_col_probs_expected_zeros];
 	//assert.deepEqual(getProbs(initMatrix(3, 4), getProbs_labels, getProbs_keywords), getProbs_expected_zeros, "getProbs() - zero condition");
+
+	// | normalisePRI()
+	var normalisePRI_pris = [0.5, 0.76, 0.3];
+	var normalisePRI_expected = [-0.10620, 1.27439, -1.16819];
+
+	assert.deepEqual(normalisePRI(normalisePRI_pris), normalisePRI_expected, "normalisePRI()");
 });
 

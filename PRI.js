@@ -22,7 +22,7 @@ function training(first_training = true)
         // Extract training data from local storage
         labels = deserializeStrArray(labels_str); // labels is a 1d Array
         keywords = deserializeStrArray(keywords_str); // keywords is a 1d array
-        count_matrix = deserializeMatrix(matrix_str); // count_matrix is a 2d array
+        count_matrix = deserializeIntMatrix(matrix_str); // count_matrix is a 2d array
 
         (debug > 0) && log("training(): not first training & data exists");
 
@@ -595,4 +595,42 @@ function createEmptyMatrix(n_rows, n_cols) {
         matrix[i] = new Array(n_cols);
     }
     return matrix;
+}
+
+/**
+ * Normalises the PRI(+) values
+ * @param   {Array} Array of PRI values
+ * @return  {Array} Array of normalised PRI values
+ */
+function normalisePRI(pris)
+{
+    var normalisedPRIs = [];
+    var mean;
+    var standard_deviation;
+    var sum1 = 0;
+    var sum2 = 0;
+    var n_plus_1 = pris.length;
+
+    for(var i = 0; i < n_plus_1; i++)
+    {
+        sum1 += pris[i];
+    }
+
+    mean = sum1 / n_plus_1;
+
+    for(var i = 0; i < n_plus_1; i++)
+    {
+        sum2 += (pris[i] - mean) * (pris[i] - mean);
+    }
+
+    // TODO: Standard Deviation should possibly be variance
+    standard_deviation = Math.sqrt(sum2 / n_plus_1);
+
+    for(var i = 0; i < n_plus_1; i++)
+    {
+        normalisedPRIs[i] = (pris[i] - mean) / standard_deviation;
+        normalisedPRIs[i] = Math.round(normalisedPRIs[i] * 100000) / 100000; // Limit the sum to 5 decimal places
+    }
+
+    return normalisedPRIs;
 }
