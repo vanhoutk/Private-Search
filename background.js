@@ -132,7 +132,7 @@ function message_recv(message, sender, sendResponse)
         sendResponse({subject: 'categories', categories: categories});
 
         /*count += 1;
-        if (count >= 2) // TODO: Need to update this logic to account for user searches correctly
+        if (count >= 2) 
         {
             // Make a probe every 5 user searches
             probe(trained_data);
@@ -150,8 +150,10 @@ function message_recv(message, sender, sendResponse)
 
         (debug > 2) && log(message.ad_text);
 
-        // TODO: update to PRI+
-        var pri = getPRI(trained_data,message.ad_text);
+        if(usePRIPlus == true)
+            var pri = getPRIPlus(trained_data,message.ad_text);
+        else
+            var pri = getPRI(trained_data,message.ad_text);
 
         (debug > 2) && log('message_recv(): ad = ' + message.ad + ', PRI = ' + pri);
 

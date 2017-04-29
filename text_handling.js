@@ -98,7 +98,8 @@ function getWordFreqPRIPlus(keywords, ad, lambda)
   // If none of the words in the ad are in the keywords, return an array filled with ones
   if(words_in_keywords == 0)
   {
-    var word_freq_ones = new Array(keywords_length).fill(1);
+    // TODO: Change fill(0) to fill(1) when normalisation is added
+    var word_freq_ones = new Array(keywords_length).fill(0);
     return word_freq_ones;
   }
   else // Else calculate the sum of the values in the array and divided each value by this sum

@@ -20,7 +20,7 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self' ",
 
   "background": { 
-    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data.js", "PRI.js", "probe.js", "background.js"]
+    "scripts": ["serialize.js", "text_handling.js", "ad_processing.js", "training_data_2.js", "PRI.js", "probe.js", "background.js"]
   },
 
   "content_scripts": [

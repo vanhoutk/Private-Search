@@ -78,8 +78,6 @@ function probe(trained_data)
 
             (debug > 0) && log("probe(): label.length " + trained_data.labels.length);
 
-            // TODO: Add more logging here to see problem
-
             var t = Date.now();
 
             for (var i = 0; i < trained_data.labels.length; i++) {
